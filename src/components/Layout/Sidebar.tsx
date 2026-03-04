@@ -104,6 +104,7 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport }) => {
                 <Link to="/participantes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Classificação Geral</Link>
                 <Link to="/participantes?tab=athletes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Melhores Atletas</Link>
                 <Link to="/historia" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>História dos Jogos</Link>
+                <Link to="/transmissao" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Transmissão</Link>
             </div>
 
             <style>{`

@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import News from './pages/News';
 import Participants from './pages/Participants';
 import History from './pages/History';
+import Transmissao from './pages/Transmissao';
 import { AuthProvider } from './context/AuthContext';
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
           <Route path="/noticias" element={<News />} />
           <Route path="/participantes" element={<Participants />} />
           <Route path="/historia" element={<History />} />
+          <Route path="/transmissao" element={<Transmissao />} />
         </Routes>
       </AuthProvider>
 
