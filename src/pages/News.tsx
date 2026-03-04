@@ -1,10 +1,12 @@
 import { type FC, useState, useEffect } from 'react';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
+import RankingModal from '../components/Modals/RankingModal';
 import { mockNews } from '../data/mockData';
 import { ExternalLink, Calendar, RefreshCw } from 'lucide-react';
 
 const News: FC = () => {
+    const [showRanking, setShowRanking] = useState(false);
     const [lastUpdated, setLastUpdated] = useState(new Date().toLocaleTimeString());
     const [nextUpdate, setNextUpdate] = useState(3600); // 1 hour in seconds
     const [isRefreshing, setIsRefreshing] = useState(false);
@@ -41,7 +43,7 @@ const News: FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Header />
             <div style={{ display: 'flex', flex: 1, paddingLeft: 'var(--sidebar-width)', paddingTop: 'var(--header-height)' }}>
-                <Sidebar />
+                <Sidebar onShowRanking={() => setShowRanking(true)} />
                 <main style={{ flex: 1, padding: '40px', maxWidth: '1400px', margin: '0 auto' }}>
                     <div style={{ marginBottom: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
                         <div>
@@ -149,6 +151,7 @@ const News: FC = () => {
                     to { transform: rotate(360deg); }
                 }
             `}</style>
+            {showRanking && <RankingModal onClose={() => setShowRanking(false)} />}
         </div>
     );
 };

@@ -2,6 +2,7 @@ import { type FC, useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
+import RankingModal from '../components/Modals/RankingModal';
 import {
     AVAILABLE_COURSES,
     COURSE_ICONS,
@@ -10,12 +11,11 @@ import {
 } from '../data/mockData';
 import {
     School,
-    Search,
-    User,
-    Trophy
+    Search
 } from 'lucide-react';
 
 const Participants: FC = () => {
+    const [showRanking, setShowRanking] = useState(false);
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'courses' | 'athletes'>('courses');
 
@@ -68,7 +68,7 @@ const Participants: FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Header />
             <div style={{ display: 'flex', flex: 1, paddingLeft: 'var(--sidebar-width)', paddingTop: 'var(--header-height)' }}>
-                <Sidebar />
+                <Sidebar onShowRanking={() => setShowRanking(true)} />
                 <main style={{ flex: 1, padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
                     <div style={{ marginBottom: '30px' }}>
                         <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '10px' }}>Participantes</h1>
@@ -117,7 +117,7 @@ const Participants: FC = () => {
                         </button>
                     </div>
 
-                    {activeTab === 'courses' ? (
+                    {activeTab === 'courses' && (
                         <div style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
@@ -161,67 +161,137 @@ const Participants: FC = () => {
                                 );
                             })}
                         </div>
-                    ) : (
+                    )}
+
+                    {activeTab === 'athletes' && (
                         <div>
-                            <div style={{ marginBottom: '40px' }}>
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px' }}>
-                                    <Trophy size={20} color="var(--accent-color)" />
-                                    <h2 style={{ fontSize: '20px', fontWeight: 800 }}>Destaques dos Jogos</h2>
+                            {/* Desktop Filters */}
+                            <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
+                                <div style={{ flex: '1 1 300px', position: 'relative' }}>
+                                    <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                                    <input
+                                        type="text"
+                                        placeholder="Buscar atleta por nome..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        style={{
+                                            width: '100%',
+                                            padding: '12px 15px 12px 45px',
+                                            background: 'var(--bg-main)',
+                                            border: '1px solid var(--border-color)',
+                                            borderRadius: '8px',
+                                            color: 'var(--text-primary)'
+                                        }}
+                                    />
                                 </div>
-                                <div style={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
-                                    gap: '20px'
-                                }}>
-                                    {[...mockAthletes].sort(() => 0.5 - Math.random()).slice(0, 5).map(athlete => (
-                                        <div key={athlete.id} className="premium-card hover-glow" style={{ padding: '20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                                <select
+                                    value={selectedSport}
+                                    onChange={(e) => setSelectedSport(e.target.value)}
+                                    style={{
+                                        padding: '12px 15px',
+                                        background: 'var(--bg-main)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)',
+                                        flex: '1 1 200px'
+                                    }}
+                                >
+                                    <option value="Todos">Todos os Esportes</option>
+                                    {AVAILABLE_SPORTS.map(sport => (
+                                        <option key={sport} value={sport}>{sport}</option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={selectedCourse}
+                                    onChange={(e) => setSelectedCourse(e.target.value)}
+                                    style={{
+                                        padding: '12px 15px',
+                                        background: 'var(--bg-main)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)',
+                                        flex: '1 1 200px'
+                                    }}
+                                >
+                                    <option value="Todos">Todos os Cursos</option>
+                                    {AVAILABLE_COURSES.map(course => (
+                                        <option key={course} value={course}>{course.split(' - ')[0]}</option>
+                                    ))}
+                                </select>
+                                <select
+                                    value={selectedInstitution}
+                                    onChange={(e) => setSelectedInstitution(e.target.value)}
+                                    style={{
+                                        padding: '12px 15px',
+                                        background: 'var(--bg-main)',
+                                        border: '1px solid var(--border-color)',
+                                        borderRadius: '8px',
+                                        color: 'var(--text-primary)',
+                                        flex: '1 1 200px'
+                                    }}
+                                >
+                                    <option value="Todas">Todas Instituições</option>
+                                    {uniqueInstitutions.map(inst => (
+                                        <option key={inst} value={inst}>{inst}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div style={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
+                                gap: '20px'
+                            }}>
+                                {filteredAthletes.map(athlete => (
+                                    <div key={athlete.id} className="premium-card hover-glow" style={{ padding: '20px', cursor: 'pointer' }}>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
                                             <div style={{
-                                                position: 'absolute',
-                                                top: '-20px',
-                                                right: '-20px',
-                                                background: 'var(--accent-color)',
                                                 width: '50px',
                                                 height: '50px',
-                                                borderRadius: '50%',
-                                                opacity: 0.1
-                                            }} />
-                                            <div style={{
-                                                width: '64px',
-                                                height: '64px',
                                                 borderRadius: '50%',
                                                 background: 'var(--bg-hover)',
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 justifyContent: 'center',
                                                 color: 'var(--accent-color)',
-                                                fontSize: '24px',
-                                                fontWeight: 800,
-                                                margin: '0 auto 15px',
-                                                border: '2px solid var(--accent-color)'
+                                                fontSize: '20px',
+                                                fontWeight: 800
                                             }}>
                                                 {athlete.firstName[0]}{athlete.lastName[0]}
                                             </div>
-                                            <div style={{ fontSize: '16px', fontWeight: 800, marginBottom: '4px' }}>
-                                                {athlete.firstName} {athlete.lastName}
-                                            </div>
-                                            <div style={{ marginTop: '15px', display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-                                                {athlete.sports.map(sport => (
-                                                    <span key={sport} style={{
-                                                        background: 'var(--bg-hover)',
-                                                        color: 'white',
-                                                        padding: '4px 10px',
-                                                        borderRadius: '20px',
-                                                        fontSize: '11px',
-                                                        fontWeight: 600,
-                                                        border: '1px solid var(--border-color)'
-                                                    }}>
-                                                        {sport}
-                                                    </span>
-                                                ))}
+                                            <div>
+                                                <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                                    {athlete.firstName} {athlete.lastName}
+                                                </div>
+                                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                                    {athlete.course}
+                                                </div>
+                                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', opacity: 0.8 }}>
+                                                    {athlete.institution}
+                                                </div>
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+                                            {athlete.sports.map(sport => (
+                                                <span key={sport} style={{
+                                                    background: 'var(--bg-main)',
+                                                    color: 'var(--text-secondary)',
+                                                    padding: '4px 8px',
+                                                    borderRadius: '4px',
+                                                    fontSize: '11px',
+                                                    border: '1px solid var(--border-color)'
+                                                }}>
+                                                    {sport}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                {filteredAthletes.length === 0 && (
+                                    <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                                        Nenhum atleta encontrado com os filtros selecionados.
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -236,6 +306,7 @@ const Participants: FC = () => {
                     box-shadow: 0 10px 30px rgba(227, 6, 19, 0.1);
                 }
             `}</style>
+            {showRanking && <RankingModal onClose={() => setShowRanking(false)} />}
         </div >
     );
 };

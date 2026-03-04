@@ -67,6 +67,7 @@ const Home: React.FC = () => {
                     setSelectedSport(sport);
                     setSelectedCategory('Todos');
                 }}
+                onShowRanking={() => setShowRanking(true)}
             />
 
             <main style={{

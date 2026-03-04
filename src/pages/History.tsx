@@ -1,13 +1,15 @@
-import { type FC } from 'react';
+import { type FC, useState } from 'react';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
+import RankingModal from '../components/Modals/RankingModal';
 
 const History: FC = () => {
+    const [showRanking, setShowRanking] = useState(false);
     return (
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Header />
             <div style={{ display: 'flex', flex: 1, paddingLeft: 'var(--sidebar-width)', paddingTop: 'var(--header-height)' }}>
-                <Sidebar />
+                <Sidebar onShowRanking={() => setShowRanking(true)} />
                 <main style={{ flex: 1, padding: '40px', maxWidth: '1000px', margin: '0 auto' }}>
                     <div style={{ marginBottom: '40px' }}>
                         <h1 style={{ fontSize: '36px', fontWeight: 800, marginBottom: '20px', color: 'var(--text-primary)' }}>História dos Jogos</h1>
@@ -70,6 +72,7 @@ const History: FC = () => {
                     </div>
                 </main>
             </div>
+            {showRanking && <RankingModal onClose={() => setShowRanking(false)} />}
         </div>
     );
 };

@@ -10,9 +10,10 @@ import {
 interface SidebarProps {
     onShowModalities?: () => void;
     onSelectSport?: (sport: string) => void;
+    onShowRanking?: () => void;
 }
 
-const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport }) => {
+const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRanking }) => {
     const principalSports = [
         { name: 'Futsal', icon: '⚽' },
         { name: 'Futebol Society', icon: '⚽' },
@@ -101,8 +102,24 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '20px' }}>
-                <Link to="/participantes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Classificação Geral</Link>
-                <Link to="/participantes?tab=athletes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Melhores Atletas</Link>
+                <button
+                    onClick={onShowRanking}
+                    className="sidebar-link"
+                    style={{
+                        padding: '10px 20px',
+                        fontSize: '13px',
+                        color: 'var(--text-secondary)',
+                        background: 'none',
+                        border: 'none',
+                        width: '100%',
+                        textAlign: 'left',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                    }}
+                >
+                    Classificação Geral
+                </button>
+                <Link to="/melhores-atletas" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Melhores Atletas</Link>
                 <Link to="/historia" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>História dos Jogos</Link>
                 <Link to="/transmissao" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Transmissão</Link>
             </div>
