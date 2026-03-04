@@ -1,4 +1,5 @@
 import { type FC } from 'react';
+import { Link } from 'react-router-dom';
 import {
     Trophy,
     ChevronRight,
@@ -100,9 +101,9 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport }) => {
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', paddingBottom: '20px' }}>
-                <a href="#" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>Classificação Geral</a>
-                <a href="#" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>Melhores Atletas</a>
-                <a href="#" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)' }}>Histórico</a>
+                <Link to="/participantes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Classificação Geral</Link>
+                <Link to="/participantes?tab=athletes" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Melhores Atletas</Link>
+                <a href="#" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Histórico</a>
             </div>
 
             <style>{`

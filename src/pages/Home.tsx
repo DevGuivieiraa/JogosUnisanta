@@ -1,12 +1,13 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
 import MatchCard from '../components/Match/MatchCard';
 import MatchModal from '../components/Match/MatchModal';
 import ModalitiesModal from '../components/Modals/ModalitiesModal';
+import RankingModal from '../components/Modals/RankingModal';
 import Login from './Login';
 import AdminDashboard from '../components/Admin/AdminDashboard';
-import { mockMatches, type Match } from '../data/mockData';
+import { mockMatches, mockNews, type Match } from '../data/mockData';
 import { useAuth } from '../context/AuthContext';
 import {
     Calendar,
@@ -18,6 +19,7 @@ const Home: React.FC = () => {
     const { user } = useAuth();
     const [showLogin, setShowLogin] = useState(false);
     const [showModalities, setShowModalities] = useState(false);
+    const [showRanking, setShowRanking] = useState(false);
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [selectedSport, setSelectedSport] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<'Todos' | 'Masculino' | 'Feminino'>('Todos');
@@ -33,6 +35,10 @@ const Home: React.FC = () => {
     const liveMatches = filteredMatches.filter(m => m.status === 'live');
     const upcomingMatches = filteredMatches.filter(m => m.status === 'scheduled');
     const finishedMatches = filteredMatches.filter(m => m.status === 'finished');
+
+    const randomHighlight = useMemo(() => {
+        return mockNews[Math.floor(Math.random() * mockNews.length)];
+    }, []);
 
     return (
         <div style={{ minHeight: '100vh' }}>
@@ -248,29 +254,42 @@ const Home: React.FC = () => {
                                         </div>
                                     ))}
                                 </div>
-                                <button style={{ width: '100%', marginTop: '20px', padding: '8px', background: 'var(--bg-hover)', borderRadius: '6px', fontSize: '12px', color: 'var(--text-secondary)' }}>Ver Tabela Completa</button>
+                                <button
+                                    onClick={() => setShowRanking(true)}
+                                    style={{ width: '100%', marginTop: '20px', padding: '12px', background: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}
+                                    className="hover-glow"
+                                >
+                                    Ver Tabela Completa
+                                </button>
                             </div>
 
                             <div className="premium-card" style={{ padding: '20px' }}>
                                 <h3 style={{ fontSize: '14px', marginBottom: '15px' }}>DESTAQUES DO DIA</h3>
-                                <div style={{ borderRadius: 'var(--border-radius)', overflow: 'hidden', position: 'relative' }}>
-                                    <img
-                                        src="https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop&q=60"
-                                        alt="Sports"
-                                        style={{ width: '100%', display: 'block' }}
-                                    />
-                                    <div style={{
-                                        position: 'absolute',
-                                        bottom: 0,
-                                        left: 0,
-                                        right: 0,
-                                        padding: '15px',
-                                        background: 'linear-gradient(transparent, rgba(0,0,0,0.9))'
-                                    }}>
-                                        <div style={{ fontSize: '11px', color: 'var(--accent-color)', fontWeight: 800 }}>FUTSAL MASCULINO</div>
-                                        <div style={{ fontSize: '14px', fontWeight: 600 }}>Fefesp garante vaga na final em jogo emocionante contra Engenharia.</div>
+                                <a
+                                    href={randomHighlight.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    style={{ textDecoration: 'none', color: 'inherit' }}
+                                >
+                                    <div style={{ borderRadius: 'var(--border-radius)', overflow: 'hidden', position: 'relative', cursor: 'pointer' }} className="hover-glow">
+                                        <img
+                                            src={randomHighlight.image || "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=500&auto=format&fit=crop&q=60"}
+                                            alt={randomHighlight.title}
+                                            style={{ width: '100%', height: '180px', objectFit: 'cover', display: 'block' }}
+                                        />
+                                        <div style={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            left: 0,
+                                            right: 0,
+                                            padding: '15px',
+                                            background: 'linear-gradient(transparent, rgba(0,0,0,0.95))'
+                                        }}>
+                                            <div style={{ fontSize: '10px', color: 'var(--accent-color)', fontWeight: 800, marginBottom: '4px' }}>NOTÍCIA</div>
+                                            <div style={{ fontSize: '13px', fontWeight: 600, lineHeight: '1.4' }}>{randomHighlight.title}</div>
+                                        </div>
                                     </div>
-                                </div>
+                                </a>
                             </div>
                         </aside>
                     </div>
@@ -286,6 +305,9 @@ const Home: React.FC = () => {
                         setSelectedCategory('Todos');
                     }}
                 />
+            )}
+            {showRanking && (
+                <RankingModal onClose={() => setShowRanking(false)} />
             )}
             {selectedMatch && (
                 <MatchModal
