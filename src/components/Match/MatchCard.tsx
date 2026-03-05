@@ -73,7 +73,7 @@ const MatchCard: FC<MatchCardProps> = ({ match, onClick }) => {
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Clock size={14} />
-                    {match.date}
+                    {match.date.split('-').reverse().join('-')}
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <MapPin size={14} />

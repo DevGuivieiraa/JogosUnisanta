@@ -23,13 +23,30 @@ const Home: React.FC = () => {
     const [selectedMatch, setSelectedMatch] = useState<Match | null>(null);
     const [selectedSport, setSelectedSport] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<'Todos' | 'Masculino' | 'Feminino'>('Todos');
+    const [selectedDate, setSelectedDate] = useState<'Todos' | 'Ontem' | 'Hoje' | 'Amanhã'>('Hoje');
+    const [showDateDropdown, setShowDateDropdown] = useState(false);
 
     const [activeView, setActiveView] = useState<'public' | 'admin'>('public');
 
     const filteredMatches = mockMatches.filter(m => {
         const sportMatch = !selectedSport || m.sport === selectedSport;
         const categoryMatch = selectedCategory === 'Todos' || m.category === selectedCategory;
-        return sportMatch && categoryMatch;
+
+        let dateMatch = true;
+        if (selectedDate !== 'Todos') {
+            const targetDate = new Date();
+            // Assuming local timezone for date formatting matching mock data "2026-03-04"
+            if (selectedDate === 'Ontem') targetDate.setDate(targetDate.getDate() - 1);
+            if (selectedDate === 'Amanhã') targetDate.setDate(targetDate.getDate() + 1);
+
+            const offset = targetDate.getTimezoneOffset();
+            const targetDateLocal = new Date(targetDate.getTime() - (offset * 60 * 1000));
+            const dateStr = targetDateLocal.toISOString().split('T')[0];
+
+            dateMatch = m.date === dateStr;
+        }
+
+        return sportMatch && categoryMatch && dateMatch;
     });
 
     const liveMatches = filteredMatches.filter(m => m.status === 'live');
@@ -127,20 +144,74 @@ const Home: React.FC = () => {
                                             Ver todos os jogos
                                         </button>
                                     )}
-                                    <div style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '8px',
-                                        background: 'var(--bg-card)',
-                                        padding: '6px 12px',
-                                        borderRadius: '8px',
-                                        fontSize: '13px',
-                                        color: 'var(--text-secondary)',
-                                        border: '1px solid var(--border-color)'
-                                    }}>
-                                        <Calendar size={14} />
-                                        <span>Hoje, 4 Mar</span>
-                                        <ChevronDown size={14} />
+                                    <div style={{ position: 'relative' }}>
+                                        <button
+                                            onClick={() => setShowDateDropdown(!showDateDropdown)}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '8px',
+                                                background: 'var(--bg-card)',
+                                                padding: '6px 12px',
+                                                borderRadius: '8px',
+                                                fontSize: '13px',
+                                                color: 'var(--text-secondary)',
+                                                border: '1px solid var(--border-color)',
+                                                cursor: 'pointer'
+                                            }}
+                                        >
+                                            <Calendar size={14} />
+                                            <span>
+                                                {selectedDate === 'Todos' ? 'Todas as Datas' : selectedDate}
+                                            </span>
+                                            <ChevronDown size={14} />
+                                        </button>
+
+                                        {showDateDropdown && (
+                                            <>
+                                                <div
+                                                    style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, zIndex: 90 }}
+                                                    onClick={() => setShowDateDropdown(false)}
+                                                />
+                                                <div style={{
+                                                    position: 'absolute',
+                                                    top: '100%',
+                                                    left: 0,
+                                                    marginTop: '4px',
+                                                    background: 'var(--bg-card)',
+                                                    border: '1px solid var(--border-color)',
+                                                    borderRadius: '8px',
+                                                    overflow: 'hidden',
+                                                    zIndex: 100,
+                                                    minWidth: '150px',
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.5)'
+                                                }}>
+                                                    {(['Todos', 'Ontem', 'Hoje', 'Amanhã'] as const).map(option => (
+                                                        <button
+                                                            key={option}
+                                                            onClick={() => {
+                                                                setSelectedDate(option);
+                                                                setShowDateDropdown(false);
+                                                            }}
+                                                            style={{
+                                                                display: 'block',
+                                                                width: '100%',
+                                                                padding: '10px 15px',
+                                                                textAlign: 'left',
+                                                                background: selectedDate === option ? 'var(--bg-hover)' : 'transparent',
+                                                                color: selectedDate === option ? 'var(--accent-color)' : 'var(--text-primary)',
+                                                                border: 'none',
+                                                                fontSize: '13px',
+                                                                fontWeight: selectedDate === option ? 700 : 500,
+                                                                cursor: 'pointer'
+                                                            }}
+                                                        >
+                                                            {option === 'Todos' ? 'Todas as Datas' : option}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
