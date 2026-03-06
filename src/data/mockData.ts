@@ -275,7 +275,7 @@ export const mockNews: News[] = [
     title: 'Comissão organizadora do 41º Jogos da Unisanta convoca atléticas para reunião de apresentação',
     summary: 'A Universidade Santa Cecília deu início à organização do 41º Jogos da Unisanta, que serão realizados entre os dias 4 e 22 de maio.',
     date: '24/02/2026',
-    image: 'https://images.unsplash.com/photo-1517649763962-0c623066013b?w=500&auto=format&fit=crop&q=60',
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2026/02/reuniao-Jogos-da-Unisanta-e1771626577726-696x547-1.jpeg',
     url: 'https://santaportal.com.br/jogos-da-unisanta/comissao-organizadora-do-41o-jogos-da-unisanta-convoca-atleticas-para-reuniao-de-apresentacao'
   },
   {
@@ -283,7 +283,7 @@ export const mockNews: News[] = [
     title: 'Entidades assistenciais recebem cerca de sete toneladas de alimentos arrecadados nos Jogos da Unisanta',
     summary: 'A Unisanta realizou, na manhã desta terça-feira (27), a cerimônia de entrega dos alimentos arrecadados durante os Jogos da Unisanta.',
     date: '27/05/2025',
-    image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=500&auto=format&fit=crop&q=60',
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2025/05/f4803cd7-0185-4da9-bb6a-b19d26f9e351.jpg',
     url: 'https://santaportal.com.br/jogos-da-unisanta/entidades-assistenciais-recebem-cerca-de-sete-toneladas-de-alimentos-arrecadados-nos-jogos-da-unisanta'
   },
   {
@@ -291,7 +291,7 @@ export const mockNews: News[] = [
     title: 'Fefesp é a campeã geral da 40ª edição dos Jogos da Unisanta',
     summary: 'A 40ª edição dos Jogos da Unisanta chegou ao fim nesta sexta-feira (23) e marcou uma noite histórica para a Fefesp Unisanta.',
     date: '23/05/2025',
-    image: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=500&auto=format&fit=crop&q=60',
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2025/05/fefesp-campea-1.jpg',
     url: 'https://santaportal.com.br/jogos-da-unisanta/fefesp-e-a-campea-geral-da-40a-edicao-dos-jogos-da-unisanta'
   },
   {
@@ -299,7 +299,7 @@ export const mockNews: News[] = [
     title: 'Unimed Santos reconhece grandiosidade dos Jogos da Unisanta',
     summary: 'Levando o lema de vida saudável e da defesa da saúde a sério, a Unimed Santos integra o time de patrocinadores.',
     date: '23/05/2025',
-    image: 'https://images.unsplash.com/photo-1505236858219-8359eb29e329?w=500&auto=format&fit=crop&q=60',
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2025/05/WhatsApp-Image-2025-05-20-at-08.46.13.jpeg',
     url: 'https://santaportal.com.br/jogos-da-unisanta/unimed-santos-reconhece-a-grandiosidade-dos-jogos-da-unisanta-e-integra-o-time-de-patrocinadores'
   },
   {
@@ -307,7 +307,7 @@ export const mockNews: News[] = [
     title: 'Sanmell Motos reafirma compromisso com a sociedade ao apoiar os Jogos da Unisanta',
     summary: 'Em seu primeiro ano de parceria, a Sanmell Motos reafirma seu compromisso em apoiar eventos voltados à saúde.',
     date: '23/05/2025',
-    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=500&auto=format&fit=crop&q=60',
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2025/05/WhatsApp-Image-2025-05-20-at-08.16.28-1.jpeg',
     url: 'https://santaportal.com.br/jogos-da-unisanta/sanmell-motos-reafirma-compromisso-com-a-sociedade-ao-apoiar-os-jogos-da-unisanta'
   },
   {
@@ -315,8 +315,8 @@ export const mockNews: News[] = [
     title: 'Allyfutebol apoia o futuro da sociedade através dos Jogos da Unisanta',
     summary: 'Objetivando gerar um impacto positivo na sociedade, a Allyfutebol participa como um dos integrantes do time de apoiadores.',
     date: '23/05/2025',
-    image: 'https://images.unsplash.com/photo-1511886929837-354d827aae26?w=500&auto=format&fit=crop&q=60',
-    url: 'https://santaportal.com.br/jogos-da-unisanta/allyfutebol-apoia-o-futuro-da-society-atraves-dos-jogos-da-unisanta'
+    image: 'https://santaportal.com.br/wp/wp-content/uploads/2025/05/WhatsApp-Image-2025-05-20-at-14.36.31.jpeg',
+    url: 'https://santaportal.com.br/jogos-da-unisanta/allyfutebol-apoia-o-futuro-da-sociedade-atraves-dos-jogos-da-unisanta'
   }
 ];
 
