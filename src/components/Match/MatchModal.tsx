@@ -1,6 +1,6 @@
 import { type FC, useState } from 'react';
 import { X, Clock, MapPin, Trophy, Play, CheckCircle } from 'lucide-react';
-import { type Match, type MatchEvent, mockAthletes } from '../../data/mockData';
+import { type Match, type MatchEvent, mockAthletes, COURSE_EMBLEMS } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
 
 interface MatchModalProps {
@@ -12,6 +12,49 @@ const MatchModal: FC<MatchModalProps> = ({ match, onClose }) => {
     const { user } = useAuth();
     const [votedFor, setVotedFor] = useState<string | null>(null);
     const [mvpVotedFor, setMvpVotedFor] = useState<string | null>(null);
+
+    const getTeamEmblem = (teamName: string) => {
+        const foundCourse = Object.keys(COURSE_EMBLEMS).find(course =>
+            teamName.toLowerCase().includes(course.toLowerCase())
+        );
+        return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
+    };
+
+    const TeamHeaderDisplay = ({ team }: { team: any }) => {
+        const emblemUrl = getTeamEmblem(team.name);
+        return (
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{
+                    height: '80px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '10px'
+                }}>
+                    {emblemUrl ? (
+                        <img
+                            src={emblemUrl}
+                            alt={team.name}
+                            style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                            }}
+                        />
+                    ) : null}
+                    <div style={{
+                        fontSize: '40px',
+                        display: emblemUrl ? 'none' : 'block'
+                    }}>
+                        {team.logo}
+                    </div>
+                </div>
+                <div style={{ fontSize: '18px', fontWeight: 800 }}>{team.name.split(' - ')[0]}</div>
+                <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{team.name.split(' - ')[1]}</div>
+            </div>
+        );
+    };
 
     const eligibleSportsForMVP = ['Futsal', 'Futebol Society', 'Basquete 3x3', 'Vôlei'];
     const isEligibleForMVP = eligibleSportsForMVP.includes(match.sport) && match.status === 'finished';
@@ -119,11 +162,7 @@ const MatchModal: FC<MatchModalProps> = ({ match, onClose }) => {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: '40px', marginBottom: '10px' }}>{match.teamA.logo}</div>
-                            <div style={{ fontSize: '18px', fontWeight: 800 }}>{match.teamA.name.split(' - ')[0]}</div>
-                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{match.teamA.name.split(' - ')[1]}</div>
-                        </div>
+                        <TeamHeaderDisplay team={match.teamA} />
 
                         <div style={{ padding: '0 30px', textAlign: 'center' }}>
                             <div style={{ fontSize: '48px', fontWeight: 900, letterSpacing: '4px', color: 'var(--text-primary)' }}>
@@ -145,11 +184,7 @@ const MatchModal: FC<MatchModalProps> = ({ match, onClose }) => {
                             )}
                         </div>
 
-                        <div style={{ flex: 1, textAlign: 'center' }}>
-                            <div style={{ fontSize: '40px', marginBottom: '10px' }}>{match.teamB.logo}</div>
-                            <div style={{ fontSize: '18px', fontWeight: 800 }}>{match.teamB.name.split(' - ')[0]}</div>
-                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{match.teamB.name.split(' - ')[1]}</div>
-                        </div>
+                        <TeamHeaderDisplay team={match.teamB} />
                     </div>
 
                     <div style={{

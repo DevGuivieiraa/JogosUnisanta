@@ -1,6 +1,6 @@
 import { type FC } from 'react';
 import { Clock, MapPin } from 'lucide-react';
-import type { Match } from '../../data/mockData';
+import { type Match, COURSE_EMBLEMS } from '../../data/mockData';
 
 interface MatchCardProps {
     match: Match;
@@ -8,6 +8,50 @@ interface MatchCardProps {
 }
 
 const MatchCard: FC<MatchCardProps> = ({ match, onClick }) => {
+    const getTeamEmblem = (teamName: string) => {
+        const foundCourse = Object.keys(COURSE_EMBLEMS).find(course =>
+            teamName.toLowerCase().includes(course.toLowerCase())
+        );
+        return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
+    };
+
+    const TeamDisplay = ({ team, side }: { team: any, side: 'left' | 'right' }) => {
+        const emblemUrl = getTeamEmblem(team.name);
+
+        return (
+            <div style={{ flex: 1, textAlign: 'center' }}>
+                <div style={{
+                    height: '64px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: '8px'
+                }}>
+                    {emblemUrl ? (
+                        <img
+                            src={emblemUrl}
+                            alt={team.name}
+                            style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain' }}
+                            onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                                const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                if (fallback) fallback.style.display = 'block';
+                            }}
+                        />
+                    ) : null}
+                    <div style={{
+                        fontSize: '32px',
+                        display: emblemUrl ? 'none' : 'block'
+                    }}>
+                        {team.logo}
+                    </div>
+                </div>
+                <div style={{ fontSize: '14px', fontWeight: 600 }}>{team.name.split(' - ')[0]}</div>
+                <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{team.name.split(' - ')[1]}</div>
+            </div>
+        );
+    };
+
     return (
         <div
             className="premium-card hover-glow"
@@ -39,11 +83,7 @@ const MatchCard: FC<MatchCardProps> = ({ match, onClick }) => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-                <div style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: '32px', marginBottom: '8px' }}>{match.teamA.logo}</div>
-                    <div style={{ fontSize: '14px', fontWeight: 600 }}>{match.teamA.name.split(' - ')[0]}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{match.teamA.name.split(' - ')[1]}</div>
-                </div>
+                <TeamDisplay team={match.teamA} side="left" />
 
                 <div style={{ flex: 1, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                     <div style={{ fontSize: '32px', fontWeight: 800, display: 'flex', gap: '15px' }}>
@@ -54,11 +94,7 @@ const MatchCard: FC<MatchCardProps> = ({ match, onClick }) => {
                     <div style={{ fontSize: '10px', color: 'var(--text-secondary)', marginTop: '5px' }}>VS</div>
                 </div>
 
-                <div style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: '32px', marginBottom: '8px' }}>{match.teamB.logo}</div>
-                    <div style={{ fontSize: '14px', fontWeight: 600 }}>{match.teamB.name.split(' - ')[0]}</div>
-                    <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{match.teamB.name.split(' - ')[1]}</div>
-                </div>
+                <TeamDisplay team={match.teamB} side="right" />
             </div>
 
             <div style={{
