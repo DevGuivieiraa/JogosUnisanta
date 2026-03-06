@@ -6,6 +6,7 @@ import RankingModal from '../components/Modals/RankingModal';
 import {
     AVAILABLE_COURSES,
     COURSE_ICONS,
+    COURSE_EMBLEMS,
     mockAthletes,
     AVAILABLE_SPORTS,
 } from '../data/mockData';
@@ -126,6 +127,7 @@ const Participants: FC = () => {
                             {AVAILABLE_COURSES.map((course, index) => {
                                 const [name, university] = course.split(' - ');
                                 const icon = getCourseIcon(name);
+                                const emblemUrl = course in COURSE_EMBLEMS ? `/emblemas/${COURSE_EMBLEMS[course]}` : null;
 
                                 return (
                                     <div key={index} className="premium-card hover-glow" style={{
@@ -135,19 +137,53 @@ const Participants: FC = () => {
                                         padding: '20px',
                                         transition: 'all 0.2s'
                                     }}>
-                                        <div style={{
-                                            width: '48px',
-                                            height: '48px',
-                                            borderRadius: '12px',
-                                            background: 'var(--bg-hover)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: 'var(--accent-color)',
-                                            fontSize: '24px'
-                                        }}>
-                                            {icon}
-                                        </div>
+                                        {emblemUrl ? (
+                                            <div style={{
+                                                width: '60px',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center'
+                                            }}>
+                                                <img
+                                                    src={emblemUrl}
+                                                    alt={`${name} emblem`}
+                                                    style={{ width: '60px', height: 'auto', objectFit: 'contain' }}
+                                                    onError={(e) => {
+                                                        e.currentTarget.style.display = 'none';
+                                                        if (e.currentTarget.nextElementSibling) {
+                                                            (e.currentTarget.nextElementSibling as HTMLElement).style.display = 'flex';
+                                                        }
+                                                    }}
+                                                />
+                                                <div style={{
+                                                    display: 'none',
+                                                    width: '48px',
+                                                    height: '48px',
+                                                    borderRadius: '12px',
+                                                    background: 'var(--bg-hover)',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'var(--accent-color)',
+                                                    fontSize: '24px'
+                                                }}>
+                                                    {icon}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div style={{
+                                                width: '48px',
+                                                height: '48px',
+                                                borderRadius: '12px',
+                                                background: 'var(--bg-hover)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: 'var(--accent-color)',
+                                                fontSize: '24px'
+                                            }}>
+                                                {icon}
+                                            </div>
+                                        )}
                                         <div>
                                             <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
                                                 {name}
