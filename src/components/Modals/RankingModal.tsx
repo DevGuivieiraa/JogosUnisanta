@@ -1,12 +1,19 @@
 import React from 'react';
 import { X, Trophy, Medal } from 'lucide-react';
-import { mockRanking, COURSE_ICONS } from '../../data/mockData';
+import { mockRanking, COURSE_ICONS, COURSE_EMBLEMS } from '../../data/mockData';
 
 interface RankingModalProps {
     onClose: () => void;
 }
 
 const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
+    const getTeamEmblem = (teamName: string) => {
+        const foundCourse = Object.keys(COURSE_EMBLEMS).find(courseKey =>
+            courseKey.toLowerCase().includes(teamName.toLowerCase())
+        );
+        return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
+    };
+
     return (
         <div style={{
             position: 'fixed',
@@ -122,7 +129,35 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                                         </td>
                                         <td style={{ padding: '15px' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                <span style={{ fontSize: '20px' }}>{icon}</span>
+                                                <div style={{
+                                                    width: '32px',
+                                                    height: '32px',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center'
+                                                }}>
+                                                    {(() => {
+                                                        const emblemUrl = getTeamEmblem(item.course);
+                                                        return emblemUrl ? (
+                                                            <img
+                                                                src={emblemUrl}
+                                                                alt={courseName}
+                                                                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                                                onError={(e) => {
+                                                                    e.currentTarget.style.display = 'none';
+                                                                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                                                    if (fallback) fallback.style.display = 'block';
+                                                                }}
+                                                            />
+                                                        ) : null;
+                                                    })()}
+                                                    <span style={{
+                                                        fontSize: '20px',
+                                                        display: getTeamEmblem(courseName) ? 'none' : 'block'
+                                                    }}>
+                                                        {icon}
+                                                    </span>
+                                                </div>
                                                 <div>
                                                     <div style={{ fontSize: '14px', fontWeight: 700 }}>{courseName}</div>
                                                     <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>{institution}</div>

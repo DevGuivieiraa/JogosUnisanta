@@ -9,8 +9,8 @@ interface MatchCardProps {
 
 const MatchCard: FC<MatchCardProps> = ({ match, onClick }) => {
     const getTeamEmblem = (teamName: string) => {
-        const foundCourse = Object.keys(COURSE_EMBLEMS).find(course =>
-            teamName.toLowerCase().includes(course.toLowerCase())
+        const foundCourse = Object.keys(COURSE_EMBLEMS).find(courseKey =>
+            courseKey.toLowerCase().includes(teamName.toLowerCase())
         );
         return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
     };
