@@ -118,14 +118,23 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                         width: '100%',
                         textAlign: 'left',
                         cursor: 'pointer',
-                        transition: 'all 0.2s'
+                        transition: 'all 0.2s',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
                     }}
                 >
-                    Classificação Geral
+                    <span style={{ fontSize: '16px' }}>🏆</span> Classificação Geral
                 </button>
-                <Link to="/melhores-atletas" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Melhores Atletas</Link>
-                <Link to="/historia" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>História dos Jogos</Link>
-                <Link to="/transmissao" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none' }}>Transmissão</Link>
+                <Link to="/melhores-atletas" className="sidebar-link" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                    <span style={{ fontSize: '16px' }}>🎖️</span> Melhores Atletas
+                </Link>
+                <Link to="/historia" className="sidebar-link" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                    <span style={{ fontSize: '16px' }}>📖</span> História dos Jogos
+                </Link>
+                <Link to="/transmissao" className="sidebar-link" style={{ padding: '10px 20px', fontSize: '13px', color: 'var(--text-secondary)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', transition: 'all 0.2s' }}>
+                    <span style={{ fontSize: '16px' }}>📺</span> Transmissão
+                </Link>
 
                 <button
                     onClick={() => setIsCalendarModalOpen(true)}
@@ -266,7 +275,7 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                             }}>
                                 <span style={{ marginRight: '8px', fontSize: '1.2rem' }}>📅</span>
                                 <strong style={{ color: '#fff', fontSize: '1rem', marginRight: '8px' }}>Período:</strong>
-                                <span style={{ color: '#d1d5db', fontSize: '0.95rem' }}>14 a 22 de maio de 2026</span>
+                                <span style={{ color: '#d1d5db', fontSize: '0.95rem' }}>04 a 22 de maio de 2026</span>
                             </div>
                         </div>
 
