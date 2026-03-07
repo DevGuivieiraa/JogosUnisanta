@@ -12,7 +12,8 @@ import {
 } from '../data/mockData';
 import {
     School,
-    Search
+    Search,
+    X
 } from 'lucide-react';
 
 const Participants: FC = () => {
@@ -54,6 +55,12 @@ const Participants: FC = () => {
         });
     }, [searchTerm, selectedSport, selectedCourse, selectedInstitution]);
 
+    const filteredCourses = useMemo(() => {
+        return AVAILABLE_COURSES.filter(course => {
+            return course.toLowerCase().includes(searchTerm.toLowerCase());
+        });
+    }, [searchTerm]);
+
     const uniqueInstitutions = useMemo(() => {
         const institutions = new Set<string>();
         mockAthletes.forEach(a => {
@@ -71,9 +78,68 @@ const Participants: FC = () => {
             <div style={{ display: 'flex', flex: 1, paddingLeft: 'var(--sidebar-width)', paddingTop: 'var(--header-height)' }}>
                 <Sidebar onShowRanking={() => setShowRanking(true)} />
                 <main style={{ flex: 1, padding: '40px', maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-                    <div style={{ marginBottom: '30px' }}>
-                        <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '10px' }}>Participantes</h1>
-                        <p style={{ color: 'var(--text-secondary)' }}>Fique por dentro de todos os talentos e delegações dos Jogos</p>
+                    <div style={{ marginBottom: '30px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '20px' }}>
+                        <div>
+                            <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '10px' }}>Participantes</h1>
+                            <p style={{ color: 'var(--text-secondary)' }}>Fique por dentro de todos os talentos e delegações dos Jogos</p>
+                        </div>
+                        <div style={{ position: 'relative', width: '100%', maxWidth: '350px' }}>
+                            <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+                            <input
+                                type="text"
+                                placeholder={activeTab === 'athletes' ? "Buscar atleta por nome..." : "Buscar curso ou atlética..."}
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                style={{
+                                    width: '100%',
+                                    padding: '12px 40px',
+                                    background: 'var(--bg-main)',
+                                    border: '1px solid var(--border-color)',
+                                    borderRadius: '8px',
+                                    color: 'var(--text-primary)',
+                                    cursor: 'text',
+                                    outline: 'none',
+                                    transition: 'all 0.2s'
+                                }}
+                                onFocus={(e) => {
+                                    e.target.style.borderColor = 'var(--accent-color)';
+                                    e.target.style.boxShadow = '0 0 10px rgba(239, 68, 68, 0.2)';
+                                }}
+                                onBlur={(e) => {
+                                    e.target.style.borderColor = 'var(--border-color)';
+                                    e.target.style.boxShadow = 'none';
+                                }}
+                            />
+                            {searchTerm && (
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    style={{
+                                        position: 'absolute',
+                                        right: '12px',
+                                        top: '50%',
+                                        transform: 'translateY(-50%)',
+                                        background: 'rgba(255,255,255,0.1)',
+                                        border: 'none',
+                                        color: 'var(--text-secondary)',
+                                        cursor: 'pointer',
+                                        display: 'flex',
+                                        padding: '4px',
+                                        borderRadius: '50%',
+                                        transition: 'all 0.2s'
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.2)';
+                                        e.currentTarget.style.color = '#fff';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        e.currentTarget.style.background = 'rgba(255,255,255,0.1)';
+                                        e.currentTarget.style.color = 'var(--text-secondary)';
+                                    }}
+                                >
+                                    <X size={14} />
+                                </button>
+                            )}
+                        </div>
                     </div>
 
                     {/* Tabs */}
@@ -124,7 +190,7 @@ const Participants: FC = () => {
                             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                             gap: '20px'
                         }}>
-                            {AVAILABLE_COURSES.map((course, index) => {
+                            {filteredCourses.map((course, index) => {
                                 const [name, university] = course.split(' - ');
                                 const icon = getCourseIcon(name);
                                 const emblemUrl = course in COURSE_EMBLEMS ? `/emblemas/${COURSE_EMBLEMS[course]}` : null;
@@ -196,6 +262,11 @@ const Participants: FC = () => {
                                     </div>
                                 );
                             })}
+                            {filteredCourses.length === 0 && (
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                                    Nenhum participante ou curso encontrado com este nome.
+                                </div>
+                            )}
                         </div>
                     )}
 
@@ -203,23 +274,7 @@ const Participants: FC = () => {
                         <div>
                             {/* Desktop Filters */}
                             <div style={{ display: 'flex', gap: '15px', marginBottom: '30px', flexWrap: 'wrap' }}>
-                                <div style={{ flex: '1 1 300px', position: 'relative' }}>
-                                    <Search size={18} color="var(--text-secondary)" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
-                                    <input
-                                        type="text"
-                                        placeholder="Buscar atleta por nome..."
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                        style={{
-                                            width: '100%',
-                                            padding: '12px 15px 12px 45px',
-                                            background: 'var(--bg-main)',
-                                            border: '1px solid var(--border-color)',
-                                            borderRadius: '8px',
-                                            color: 'var(--text-primary)'
-                                        }}
-                                    />
-                                </div>
+                                {/* Search input was moved to correct header scope */}
                                 <select
                                     value={selectedSport}
                                     onChange={(e) => setSelectedSport(e.target.value)}
@@ -325,7 +380,7 @@ const Participants: FC = () => {
                                 ))}
                                 {filteredAthletes.length === 0 && (
                                     <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
-                                        Nenhum atleta encontrado com os filtros selecionados.
+                                        Nenhum participante ou curso encontrado com este nome.
                                     </div>
                                 )}
                             </div>

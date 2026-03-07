@@ -1,5 +1,5 @@
 import { type FC } from 'react';
-import { Search, User as UserIcon, LogOut, LayoutDashboard, Settings } from 'lucide-react';
+import { User as UserIcon, LogOut, LayoutDashboard, Settings } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileModal from '../Modals/ProfileModal';
@@ -51,30 +51,6 @@ const Header: FC = () => {
             </div>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    background: 'var(--bg-hover)',
-                    padding: '8px 16px',
-                    borderRadius: '20px',
-                    gap: '8px',
-                    border: '1px solid var(--border-color)'
-                }}>
-                    <Search size={16} color="var(--text-secondary)" />
-                    <input
-                        type="text"
-                        placeholder="Buscar jogos, atletas..."
-                        style={{
-                            background: 'none',
-                            border: 'none',
-                            color: 'var(--text-primary)',
-                            fontSize: '13px',
-                            outline: 'none',
-                            width: '200px'
-                        }}
-                    />
-                </div>
-
                 {user ? (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
                         <div
