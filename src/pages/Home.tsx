@@ -7,23 +7,16 @@ import ModalitiesModal from '../components/Modals/ModalitiesModal';
 import RankingModal from '../components/Modals/RankingModal';
 import Login from './Login';
 import AdminDashboard from '../components/Admin/AdminDashboard';
-import { mockMatches, mockNews, type Match, COURSE_EMBLEMS, mockRanking } from '../data/mockData';
+import { mockMatches, mockNews, type Match } from '../data/mockData';
+import Countdown from '../components/Layout/Countdown';
 import { useAuth } from '../context/AuthContext';
 import {
     Calendar,
     ChevronDown,
-    Award,
-    Trophy,
+    Award
 } from 'lucide-react';
 
 const Home: React.FC = () => {
-    const getTeamEmblem = (teamName: string) => {
-        const foundCourse = Object.keys(COURSE_EMBLEMS).find(courseKey =>
-            courseKey.toLowerCase().includes(teamName.toLowerCase())
-        );
-        return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
-    };
-
     const { user } = useAuth();
     const [showLogin, setShowLogin] = useState(false);
     const [showModalities, setShowModalities] = useState(false);
@@ -316,44 +309,7 @@ const Home: React.FC = () => {
 
                         {/* Right Column: Mini Tables / Stats */}
                         <aside>
-                            <div className="premium-card" style={{ padding: '20px', marginBottom: '20px' }}>
-                                <h3 style={{ fontSize: '14px', marginBottom: '15px', color: 'var(--accent-color)' }}>RANKING DE CURSOS</h3>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                                    {mockRanking.slice(0, 4).map((item) => {
-                                        const courseName = item.course.split(' - ')[0];
-                                        return (
-                                            <div key={item.course} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '13px' }}>
-                                                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                                                    <span style={{ fontWeight: 800, minWidth: '12px', color: item.rank <= 3 ? 'var(--accent-color)' : 'var(--text-secondary)' }}>{item.rank}</span>
-                                                    <div style={{ width: '24px', height: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                        {(() => {
-                                                            const emblemUrl = getTeamEmblem(item.course);
-                                                            return emblemUrl ? (
-                                                                <img
-                                                                    src={emblemUrl}
-                                                                    alt={courseName}
-                                                                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                                                                />
-                                                            ) : (
-                                                                <Trophy size={14} color="var(--text-secondary)" />
-                                                            );
-                                                        })()}
-                                                    </div>
-                                                    <span>{courseName}</span>
-                                                </div>
-                                                <span style={{ fontWeight: 700 }}>{item.points} Pts</span>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                                <button
-                                    onClick={() => setShowRanking(true)}
-                                    style={{ width: '100%', marginTop: '20px', padding: '12px', background: 'var(--bg-hover)', border: '1px solid var(--border-color)', borderRadius: '8px', fontSize: '12px', fontWeight: 700, color: 'white', cursor: 'pointer', transition: 'all 0.2s' }}
-                                    className="hover-glow"
-                                >
-                                    Ver Tabela Completa
-                                </button>
-                            </div>
+                            <Countdown />
 
                             <div className="premium-card" style={{ padding: '20px' }}>
                                 <h3 style={{ fontSize: '14px', marginBottom: '15px' }}>DESTAQUES DO DIA</h3>
