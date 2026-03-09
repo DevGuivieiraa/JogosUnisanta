@@ -10,9 +10,11 @@ import {
     Layout,
     MapPin,
     Calendar,
-    Save
+    Save,
+    Trash2
 } from 'lucide-react';
-import { AVAILABLE_COURSES, COURSE_EMBLEMS, COURSE_ICONS } from '../../data/mockData';
+import { COURSE_EMBLEMS, COURSE_ICONS } from '../../data/mockData';
+import { useData } from '../context/DataContext';
 
 // Mock de dados interno
 const jogosIniciais = [
@@ -59,7 +61,15 @@ const AdminDashboard: React.FC = () => {
     const [selectedStat, setSelectedStat] = useState<any>(null);
     const [isNewMatchOpen, setIsNewMatchOpen] = useState(false);
     const [isScoreOpen, setIsScoreOpen] = useState(false);
+    const [isNewCourseOpen, setIsNewCourseOpen] = useState(false);
+    const [isNewAthleteOpen, setIsNewAthleteOpen] = useState(false);
     const [selectedMatch, setSelectedMatch] = useState<any>(null);
+    // DataContext
+    const { courses: coursesList, addCourse, removeCourse, athletes: athletesList, addAthlete, removeAthlete } = useData();
+
+    // Form and Data States
+    const [newCourseForm, setNewCourseForm] = useState({ name: '', university: '', emblem: '' });
+    const [newAthleteForm, setNewAthleteForm] = useState({ name: '', university: '', course: '', sport: '' });
 
     // Form States
     const [newMatchForm, setNewMatchForm] = useState({
@@ -141,13 +151,58 @@ const AdminDashboard: React.FC = () => {
     const stats = [
         { label: 'Total Atletas', value: '1,240', icon: <Users size={20} />, color: '#3b82f6', type: 'athletes' },
         { label: 'Partidas Hoje', value: matches.filter(m => m.status === 'LIVE').length.toString(), icon: <Trophy size={20} />, color: '#ef4444', type: 'matches' },
-        { label: 'Cursos Inscritos', value: AVAILABLE_COURSES.length.toString(), icon: <BookOpen size={20} />, color: '#10b981', type: 'courses' },
+        { label: 'Cursos Inscritos', value: coursesList.length.toString(), icon: <BookOpen size={20} />, color: '#10b981', type: 'courses' },
         { label: 'Resultados Pendentes', value: pendingResults.toString(), icon: <PlusCircle size={20} />, color: '#f59e0b', type: 'pending' },
     ];
 
     const getCourseIcon = (name: string) => {
         const foundKey = Object.keys(COURSE_ICONS).find(key => name.includes(key));
         return foundKey ? COURSE_ICONS[foundKey] : '🎓';
+    };
+
+    const handleSaveNewCourse = () => {
+        if (!newCourseForm.name || !newCourseForm.university) {
+            showNotification('Preencha Nome e Faculdade!');
+            return;
+        }
+        const fullCourseString = `${newCourseForm.name} - ${newCourseForm.university}`;
+        addCourse(fullCourseString);
+        setIsNewCourseOpen(false);
+        setNewCourseForm({ name: '', university: '', emblem: '' });
+        showNotification("Curso cadastrado com sucesso!");
+    };
+
+    const handleDeleteCourse = (courseString: string) => {
+        if (window.confirm(`Tem certeza que deseja remover o curso "${courseString}"? Todos os atletas vinculados a ele serão excluídos automaticamente também.`)) {
+            removeCourse(courseString);
+            showNotification("Curso e atletas vinculados excluídos com sucesso!");
+        }
+    };
+
+    const handleSaveNewAthlete = () => {
+        if (!newAthleteForm.name || !newAthleteForm.university || !newAthleteForm.course || !newAthleteForm.sport) {
+            showNotification('Preencha todos os campos do atleta!');
+            return;
+        }
+        const newAthlete = {
+            id: Date.now().toString(),
+            firstName: newAthleteForm.name.split(' ')[0],
+            lastName: newAthleteForm.name.split(' ').slice(1).join(' ') || '',
+            institution: newAthleteForm.university,
+            course: newAthleteForm.course,
+            sports: [newAthleteForm.sport]
+        };
+        addAthlete(newAthlete);
+        setIsNewAthleteOpen(false);
+        setNewAthleteForm({ name: '', university: '', course: '', sport: '' });
+        showNotification("Atleta cadastrado com sucesso!");
+    };
+
+    const handleDeleteAthlete = (id: string, name: string) => {
+        if (window.confirm(`Tem certeza que deseja remover o atleta ${name}?`)) {
+            removeAthlete(id);
+            showNotification("Atleta excluído com sucesso!");
+        }
     };
 
     return (
@@ -195,6 +250,7 @@ const AdminDashboard: React.FC = () => {
                         { id: 'overview', label: 'Visão Geral', icon: <Layout size={18} /> },
                         { id: 'matches', label: 'Gerenciar Partidas', icon: <Clock size={18} /> },
                         { id: 'teams', label: 'Equipes & Cursos', icon: <Users size={18} /> },
+                        { id: 'athletes', label: 'Atletas', icon: <Users size={18} /> },
                         { id: 'reports', label: 'Relatórios PDF', icon: <FileText size={18} /> },
                         { id: 'settings', label: 'Configurações', icon: <Settings size={18} /> },
                     ].map(tab => (
@@ -401,47 +457,202 @@ const AdminDashboard: React.FC = () => {
                     )}
 
                     {activeTab === 'teams' && (
-                        <div className="premium-card" style={{ padding: '20px' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
-                                <Users size={24} color="var(--accent-color)" />
-                                <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Equipes & Cursos Inscritos</h2>
+                        <div className="premium-card" style={{ padding: '0', overflow: 'hidden' }}>
+                            <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <Users size={24} color="var(--accent-color)" />
+                                    <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Equipes & Cursos Inscritos</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsNewCourseOpen(true)}
+                                    style={{
+                                        background: 'var(--accent-color)',
+                                        color: 'white',
+                                        padding: '8px 16px',
+                                        borderRadius: '6px',
+                                        fontSize: '13px',
+                                        fontWeight: 700,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        cursor: 'pointer',
+                                        border: 'none',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.background = '#c10510'}
+                                    onMouseOut={e => e.currentTarget.style.background = 'var(--accent-color)'}
+                                >
+                                    <PlusCircle size={16} />
+                                    Cadastrar Novo Curso
+                                </button>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
-                                {AVAILABLE_COURSES.map((course, index) => {
-                                    const [name, university] = course.split(' - ');
-                                    const icon = getCourseIcon(name);
-                                    const emblemUrl = course in COURSE_EMBLEMS ? `/emblemas/${COURSE_EMBLEMS[course]}` : null;
+                            <div style={{ padding: '20px' }}>
+                                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '15px' }}>
+                                    {coursesList.map((course, index) => {
+                                        const [name, university] = course.split(' - ');
+                                        const icon = getCourseIcon(name);
+                                        const emblemUrl = course in COURSE_EMBLEMS ? `/emblemas/${COURSE_EMBLEMS[course]}` : null;
 
-                                    return (
-                                        <div key={index} style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: '12px',
-                                            padding: '12px',
-                                            background: 'var(--bg-hover)',
-                                            borderRadius: '8px',
-                                            border: '1px solid var(--border-color)'
-                                        }}>
-                                            {emblemUrl ? (
-                                                <img
-                                                    src={emblemUrl}
-                                                    alt={name}
-                                                    style={{ width: '40px', height: '40px', objectFit: 'contain' }}
-                                                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
-                                                />
-                                            ) : (
-                                                <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
-                                                    {icon}
+                                        return (
+                                            <div key={index} style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '12px',
+                                                padding: '12px',
+                                                background: 'var(--bg-hover)',
+                                                borderRadius: '8px',
+                                                border: '1px solid var(--border-color)'
+                                            }}>
+                                                {emblemUrl ? (
+                                                    <img
+                                                        src={emblemUrl}
+                                                        alt={name}
+                                                        style={{ width: '40px', height: '40px', objectFit: 'contain' }}
+                                                        onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                                    />
+                                                ) : (
+                                                    <div style={{ width: '40px', height: '40px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px' }}>
+                                                        {icon}
+                                                    </div>
+                                                )}
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{name}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{university}</div>
                                                 </div>
-                                            )}
-                                            <div>
-                                                <div style={{ fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>{name}</div>
-                                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{university}</div>
+                                                <button
+                                                    onClick={() => handleDeleteCourse(course)}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: '1px solid var(--border-color)',
+                                                        color: 'var(--text-secondary)',
+                                                        padding: '8px',
+                                                        borderRadius: '6px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    title="Excluir Curso"
+                                                    onMouseOver={e => {
+                                                        e.currentTarget.style.color = 'var(--accent-color)';
+                                                        e.currentTarget.style.borderColor = 'var(--accent-color)';
+                                                        e.currentTarget.style.background = 'rgba(227, 6, 19, 0.1)';
+                                                    }}
+                                                    onMouseOut={e => {
+                                                        e.currentTarget.style.color = 'var(--text-secondary)';
+                                                        e.currentTarget.style.borderColor = 'var(--border-color)';
+                                                        e.currentTarget.style.background = 'transparent';
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
                                             </div>
-                                        </div>
-                                    )
-                                })}
+                                        )
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {activeTab === 'athletes' && (
+                        <div className="premium-card" style={{ padding: '0', overflow: 'hidden' }}>
+                            <div style={{ padding: '20px', borderBottom: '1px solid var(--border-color)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                    <Users size={24} color="var(--accent-color)" />
+                                    <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Gerenciar Atletas</h2>
+                                </div>
+                                <button
+                                    onClick={() => setIsNewAthleteOpen(true)}
+                                    style={{
+                                        background: 'var(--accent-color)',
+                                        color: 'white',
+                                        padding: '8px 16px',
+                                        borderRadius: '6px',
+                                        fontSize: '13px',
+                                        fontWeight: 700,
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: '8px',
+                                        cursor: 'pointer',
+                                        border: 'none',
+                                        transition: 'background 0.2s'
+                                    }}
+                                    onMouseOver={e => e.currentTarget.style.background = '#c10510'}
+                                    onMouseOut={e => e.currentTarget.style.background = 'var(--accent-color)'}
+                                >
+                                    <PlusCircle size={16} />
+                                    Cadastrar Novo Atleta
+                                </button>
+                            </div>
+
+                            <div style={{ padding: '20px' }}>
+                                {athletesList.length === 0 ? (
+                                    <div style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '40px 0' }}>
+                                        Nenhum atleta cadastrado ainda.
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '15px' }}>
+                                        {athletesList.map((athlete) => (
+                                            <div key={athlete.id} style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '15px',
+                                                padding: '16px',
+                                                background: 'var(--bg-hover)',
+                                                borderRadius: '8px',
+                                                border: '1px solid var(--border-color)'
+                                            }}>
+                                                <div style={{
+                                                    width: '50px',
+                                                    height: '50px',
+                                                    borderRadius: '50%',
+                                                    background: 'rgba(255,255,255,0.05)',
+                                                    display: 'flex',
+                                                    alignItems: 'center',
+                                                    justifyContent: 'center',
+                                                    color: 'var(--text-secondary)'
+                                                }}>
+                                                    <Users size={24} />
+                                                </div>
+                                                <div style={{ flex: 1 }}>
+                                                    <div style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>{athlete.firstName} {athlete.lastName}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '2px' }}>{athlete.course} - {athlete.institution}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--accent-color)', fontWeight: 600, marginTop: '4px' }}>{athlete.sports[0]}</div>
+                                                </div>
+                                                <button
+                                                    onClick={() => handleDeleteAthlete(athlete.id, `${athlete.firstName} ${athlete.lastName}`)}
+                                                    style={{
+                                                        background: 'transparent',
+                                                        border: '1px solid var(--border-color)',
+                                                        color: 'var(--text-secondary)',
+                                                        padding: '8px',
+                                                        borderRadius: '6px',
+                                                        cursor: 'pointer',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        transition: 'all 0.2s'
+                                                    }}
+                                                    title="Excluir Atleta"
+                                                    onMouseOver={e => {
+                                                        e.currentTarget.style.color = 'var(--accent-color)';
+                                                        e.currentTarget.style.borderColor = 'var(--accent-color)';
+                                                        e.currentTarget.style.background = 'rgba(227, 6, 19, 0.1)';
+                                                    }}
+                                                    onMouseOut={e => {
+                                                        e.currentTarget.style.color = 'var(--text-secondary)';
+                                                        e.currentTarget.style.borderColor = 'var(--border-color)';
+                                                        e.currentTarget.style.background = 'transparent';
+                                                    }}
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}
@@ -568,10 +779,10 @@ const AdminDashboard: React.FC = () => {
                         <>
                             <p style={{ color: 'var(--text-secondary)', marginBottom: '20px' }}>Lista oficial de faculdades participantes.</p>
                             <div style={{ background: 'var(--bg-hover)', borderRadius: '8px', padding: '16px', maxHeight: '400px', overflowY: 'auto' }}>
-                                {AVAILABLE_COURSES.map((course, i) => {
+                                {coursesList.map((course, i) => {
                                     const [name, university] = course.split(' - ');
                                     return (
-                                        <div key={i} style={{ padding: '12px 0', borderBottom: i < AVAILABLE_COURSES.length - 1 ? '1px solid var(--border-color)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-primary)' }}>
+                                        <div key={i} style={{ padding: '12px 0', borderBottom: i < coursesList.length - 1 ? '1px solid var(--border-color)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'var(--text-primary)' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                 <div style={{ width: '30px', height: '30px', background: 'rgba(255,255,255,0.05)', borderRadius: '6px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px' }}>
                                                     {getCourseIcon(name)}
@@ -622,6 +833,73 @@ const AdminDashboard: React.FC = () => {
                         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                             <button onClick={handleSaveNewMatch} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Partida</button>
                             <button onClick={() => setIsNewMatchOpen(false)} style={modalButtonStyle}>Cancelar</button>
+                        </div>
+                    </div>
+                </ModalOverlay>
+            )}
+
+            {isNewCourseOpen && (
+                <ModalOverlay onClose={() => setIsNewCourseOpen(false)}>
+                    <h2 style={{ marginBottom: '16px' }}>Cadastrar Novo Curso</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Nome do Curso (Ex: Arquitetura)</label>
+                            <input type="text" placeholder="Engenharia de Produção" style={inputStyle} value={newCourseForm.name} onChange={e => setNewCourseForm({ ...newCourseForm, name: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Faculdade ou Instituição (Ex: Unisanta)</label>
+                            <input type="text" placeholder="Unip" style={inputStyle} value={newCourseForm.university} onChange={e => setNewCourseForm({ ...newCourseForm, university: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Emblema Oficial (Upload simulado)</label>
+                            <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', cursor: 'pointer' }} onClick={() => setNewCourseForm({ ...newCourseForm, emblem: 'uploaded' })}>
+                                <span style={{ background: 'rgba(255,255,255,0.1)', padding: '4px 10px', borderRadius: '4px', fontSize: '12px' }}>Escolher Arquivo</span>
+                                <span style={{ fontSize: '13px' }}>{newCourseForm.emblem ? 'emblema.png' : 'Nenhum arquivo /emblemas/...'}</span>
+                            </div>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                            <button onClick={handleSaveNewCourse} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Cadastro</button>
+                            <button onClick={() => setIsNewCourseOpen(false)} style={modalButtonStyle}>Cancelar</button>
+                        </div>
+                    </div>
+                </ModalOverlay>
+            )}
+
+            {isNewAthleteOpen && (
+                <ModalOverlay onClose={() => setIsNewAthleteOpen(false)}>
+                    <h2 style={{ marginBottom: '16px' }}>Cadastrar Novo Atleta</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Nome Completo</label>
+                            <input type="text" placeholder="Ex: João da Silva" style={inputStyle} value={newAthleteForm.name} onChange={e => setNewAthleteForm({ ...newAthleteForm, name: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Faculdade (Ex: Unisanta)</label>
+                            <input type="text" placeholder="Ex: Unisanta" style={inputStyle} value={newAthleteForm.university} onChange={e => setNewAthleteForm({ ...newAthleteForm, university: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Curso (Ex: Engenharia)</label>
+                            <input type="text" placeholder="Ex: Engenharia de Produção" style={inputStyle} value={newAthleteForm.course} onChange={e => setNewAthleteForm({ ...newAthleteForm, course: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Modalidade Principal</label>
+                            <select style={inputStyle} value={newAthleteForm.sport} onChange={e => setNewAthleteForm({ ...newAthleteForm, sport: e.target.value })}>
+                                <option value="">Selecione a Modalidade...</option>
+                                <option value="Futsal Masculino">Futsal Masculino</option>
+                                <option value="Futsal Feminino">Futsal Feminino</option>
+                                <option value="Vôlei Masculino">Vôlei Masculino</option>
+                                <option value="Vôlei Feminino">Vôlei Feminino</option>
+                                <option value="Basquete Masculino">Basquete Masculino</option>
+                                <option value="Handebol Masculino">Handebol Masculino</option>
+                                <option value="Natação">Natação</option>
+                                <option value="E-Sports (LoL)">E-Sports (LoL)</option>
+                            </select>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                            <button onClick={handleSaveNewAthlete} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Atleta</button>
+                            <button onClick={() => setIsNewAthleteOpen(false)} style={modalButtonStyle}>Cancelar</button>
                         </div>
                     </div>
                 </ModalOverlay>

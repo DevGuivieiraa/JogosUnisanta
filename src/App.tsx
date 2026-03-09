@@ -7,6 +7,7 @@ import Transmissao from './pages/Transmissao';
 import MelhoresAtletas from './pages/MelhoresAtletas';
 import Simulator from './pages/Simulator';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { DataProvider } from './components/context/DataContext';
 import Login from './pages/Login';
 
 const AppContent = () => {
@@ -31,9 +32,11 @@ const AppContent = () => {
 function App() {
   return (
     <Router>
-      <AuthProvider>
-        <AppContent />
-      </AuthProvider>
+      <DataProvider>
+        <AuthProvider>
+          <AppContent />
+        </AuthProvider>
+      </DataProvider>
     </Router>
   );
 }

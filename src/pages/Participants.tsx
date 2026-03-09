@@ -5,12 +5,11 @@ import Sidebar from '../components/Layout/Sidebar';
 import RankingModal from '../components/Modals/RankingModal';
 import ModalDetalhes from '../components/Modals/ModalDetalhes';
 import {
-    AVAILABLE_COURSES,
     COURSE_ICONS,
     COURSE_EMBLEMS,
-    mockAthletes,
     AVAILABLE_SPORTS,
 } from '../data/mockData';
+import { useData } from '../components/context/DataContext';
 import {
     School,
     Search,
@@ -36,6 +35,9 @@ const Participants: FC = () => {
     const [selectedCourse, setSelectedCourse] = useState('Todos');
     const [selectedInstitution, setSelectedInstitution] = useState('Todas');
 
+    // Context Data
+    const { courses, athletes } = useData();
+
     useEffect(() => {
         const tab = searchParams.get('tab');
         if (tab === 'athletes') {
@@ -51,7 +53,7 @@ const Participants: FC = () => {
     };
 
     const filteredAthletes = useMemo(() => {
-        return mockAthletes.filter(athlete => {
+        return athletes.filter(athlete => {
             const nameMatch = `${athlete.firstName} ${athlete.lastName}`.toLowerCase().includes(searchTerm.toLowerCase());
             const sportMatch = selectedSport === 'Todos' || athlete.sports.includes(selectedSport);
             const courseMatch = selectedCourse === 'Todos' || athlete.course === selectedCourse;
@@ -62,24 +64,24 @@ const Participants: FC = () => {
 
             return nameMatch && sportMatch && courseMatch && instMatch;
         });
-    }, [searchTerm, selectedSport, selectedCourse, selectedInstitution]);
+    }, [searchTerm, selectedSport, selectedCourse, selectedInstitution, athletes]);
 
     const filteredCourses = useMemo(() => {
-        return AVAILABLE_COURSES.filter(course => {
+        return courses.filter(course => {
             return course.toLowerCase().includes(searchTerm.toLowerCase());
         });
-    }, [searchTerm]);
+    }, [searchTerm, courses]);
 
     const uniqueInstitutions = useMemo(() => {
         const institutions = new Set<string>();
-        mockAthletes.forEach(a => {
+        athletes.forEach(a => {
             // Extract core institution name (e.g., Unisanta, Unisantos)
             const parts = a.institution.split(' - ');
             const core = parts.length > 1 ? parts[parts.length - 1] : parts[0];
             institutions.add(core);
         });
         return Array.from(institutions).sort();
-    }, []);
+    }, [athletes]);
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
@@ -320,8 +322,8 @@ const Participants: FC = () => {
                                     }}
                                 >
                                     <option value="Todos">Todos os Cursos</option>
-                                    {AVAILABLE_COURSES.map(course => (
-                                        <option key={course} value={course}>{course.split(' - ')[0]}</option>
+                                    {courses.map(course => (
+                                        <option key={course} value={course.split(' - ')[0]}>{course.split(' - ')[0]}</option>
                                     ))}
                                 </select>
                                 <select
