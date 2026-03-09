@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
 import RankingModal from '../components/Modals/RankingModal';
+import ModalDetalhes from '../components/Modals/ModalDetalhes';
 import {
     AVAILABLE_COURSES,
     COURSE_ICONS,
@@ -20,6 +21,14 @@ const Participants: FC = () => {
     const [showRanking, setShowRanking] = useState(false);
     const [searchParams] = useSearchParams();
     const [activeTab, setActiveTab] = useState<'courses' | 'athletes'>('courses');
+
+    // Selected Course Details
+    const [selectedCourseDetails, setSelectedCourseDetails] = useState<{
+        name: string;
+        university: string;
+        icon: React.ReactNode;
+        emblemUrl: string | null;
+    } | null>(null);
 
     // Athlete Filters
     const [searchTerm, setSearchTerm] = useState('');
@@ -196,13 +205,19 @@ const Participants: FC = () => {
                                 const emblemUrl = course in COURSE_EMBLEMS ? `/emblemas/${COURSE_EMBLEMS[course]}` : null;
 
                                 return (
-                                    <div key={index} className="premium-card hover-glow" style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        gap: '16px',
-                                        padding: '20px',
-                                        transition: 'all 0.2s'
-                                    }}>
+                                    <div
+                                        key={index}
+                                        className="premium-card hover-glow"
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '16px',
+                                            padding: '20px',
+                                            transition: 'all 0.2s',
+                                            cursor: 'pointer'
+                                        }}
+                                        onClick={() => setSelectedCourseDetails({ name, university, icon, emblemUrl })}
+                                    >
                                         {emblemUrl ? (
                                             <div style={{
                                                 width: '60px',
@@ -398,6 +413,11 @@ const Participants: FC = () => {
                 }
             `}</style>
             {showRanking && <RankingModal onClose={() => setShowRanking(false)} />}
+            <ModalDetalhes
+                isOpen={!!selectedCourseDetails}
+                onClose={() => setSelectedCourseDetails(null)}
+                courseData={selectedCourseDetails}
+            />
         </div >
     );
 };
