@@ -72,6 +72,11 @@ const Participants: FC = () => {
         }).sort((a, b) => a.localeCompare(b));
     }, [searchTerm, courses]);
 
+    const uniqueCourses = useMemo(() => {
+        const unique = new Set<string>(athletes.map(a => a.course));
+        return Array.from(unique).sort((a, b) => a.localeCompare(b));
+    }, [athletes]);
+
     const uniqueInstitutions = useMemo(() => {
         const institutions = new Set<string>();
         athletes.forEach(a => {
@@ -322,8 +327,8 @@ const Participants: FC = () => {
                                     }}
                                 >
                                     <option value="Todos">Todos os Cursos</option>
-                                    {courses.map(course => (
-                                        <option key={course} value={course.split(' - ')[0]}>{course.split(' - ')[0]}</option>
+                                    {uniqueCourses.map(course => (
+                                        <option key={course} value={course}>{course}</option>
                                     ))}
                                 </select>
                                 <select
