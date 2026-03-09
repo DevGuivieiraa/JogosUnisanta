@@ -266,34 +266,18 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                                 borderRadius: '12px',
                                 border: '1px solid rgba(255,255,255,0.1)'
                             }}>
-                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '12px' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
                                     <span style={{ marginRight: '8px', fontSize: '1.2rem' }}>📍</span>
-                                    <strong style={{ color: '#fff', fontSize: '1rem' }}>Locais Principais:</strong>
+                                    <strong style={{ color: 'var(--accent-color, #ef4444)', fontSize: '1rem', fontWeight: '800' }}>Locais Principais:</strong>
                                 </div>
-                                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', paddingLeft: '8px', fontSize: '0.95rem', color: '#e5e7eb' }}>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '1.1rem' }}>🏟️</span> Centro de Treinamento
-                                    </div>
-                                    <div style={{ paddingLeft: '30px', color: '#d1d5db', position: 'relative', marginBottom: '4px' }}>
-                                        <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--accent-color)' }}></span>
-                                        Poliesportivo Unisanta (Bloco M)
-                                    </div>
-                                    <div style={{ paddingLeft: '30px', color: '#d1d5db', position: 'relative', marginBottom: '8px' }}>
-                                        <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', width: '4px', height: '4px', borderRadius: '50%', backgroundColor: 'var(--accent-color)' }}></span>
-                                        Laerte Gonçalves (Bloco D)
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '1.1rem' }}>🏟️</span> Arena Unisanta
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '1.1rem' }}>🏟️</span> Rebouças
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '1.1rem' }}>🏟️</span> Piscina Olímpica
-                                    </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <span style={{ fontSize: '1.1rem' }}>🏟️</span> Bloco A
-                                    </div>
+                                <div style={{ display: 'flex', flexDirection: 'column', paddingLeft: '8px', fontSize: '0.95rem', color: '#e5e7eb', lineHeight: 1.8 }}>
+                                    <div>🏟️ Centro de Treinamento</div>
+                                    <div>🏟️ Poliesportivo Unisanta (Bloco M)</div>
+                                    <div>🏟️ Laerte Gonçalves (Bloco D)</div>
+                                    <div>🏟️ Arena Unisanta</div>
+                                    <div>🏟️ Rebouças</div>
+                                    <div>🏟️ Bloco A</div>
+                                    <div>🏊 Piscina Olímpica</div>
                                 </div>
                             </div>
 
