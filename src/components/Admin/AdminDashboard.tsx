@@ -12,48 +12,13 @@ import {
     Save,
     Trash2
 } from 'lucide-react';
-import { COURSE_EMBLEMS, COURSE_ICONS } from '../../data/mockData';
+import { COURSE_EMBLEMS, COURSE_ICONS, AVAILABLE_SPORTS } from '../../data/mockData';
 import { useData } from '../context/DataContext';
-
-// Mock de dados interno
-const jogosIniciais = [
-    {
-        id: '1',
-        timeA: 'Fefesp',
-        timeB: 'Engenharia',
-        placarA: 0,
-        placarB: 0,
-        modalidade: 'Futsal Masculino',
-        status: 'LIVE',
-        local: 'Poliesportivo - 19:00'
-    },
-    {
-        id: '2',
-        timeA: 'Odonto',
-        timeB: 'Direito',
-        placarA: 0,
-        placarB: 0,
-        modalidade: 'Vôlei Feminino',
-        status: 'SCHEDULED',
-        local: 'Ginásio Principal - 20:30'
-    },
-    {
-        id: '3',
-        timeA: 'Fisioterapia',
-        timeB: 'Sistemas',
-        placarA: 2,
-        placarB: 1,
-        modalidade: 'Handebol Masculino',
-        status: 'LIVE',
-        local: 'Quadra 2 - 19:00'
-    }
-];
 
 const AdminDashboard: React.FC = () => {
     const [activeTab, setActiveTab] = useState('overview');
 
-    // Matches State and Filtering
-    const [matches, setMatches] = useState(jogosIniciais);
+    // Matches Filter
     const [filter, setFilter] = useState<'all' | 'male' | 'female'>('all');
 
     // Modal & Feedback States
@@ -64,7 +29,7 @@ const AdminDashboard: React.FC = () => {
     const [isNewAthleteOpen, setIsNewAthleteOpen] = useState(false);
     const [selectedMatch, setSelectedMatch] = useState<any>(null);
     // DataContext
-    const { courses: coursesList, addCourse, removeCourse, athletes: athletesList, addAthlete, removeAthlete, customEmblems, addCustomEmblem } = useData();
+    const { courses: coursesList, addCourse, removeCourse, athletes: athletesList, addAthlete, removeAthlete, customEmblems, addCustomEmblem, matches, addMatch, updateMatch, deleteMatch } = useData();
 
     // Form and Data States
     const [newCourseForm, setNewCourseForm] = useState({ name: '', university: '', emblem: '' });
@@ -72,7 +37,7 @@ const AdminDashboard: React.FC = () => {
 
     // Form States
     const [newMatchForm, setNewMatchForm] = useState({
-        teamA: '', teamB: '', sport: '', time: '', location: ''
+        teamA: '', teamB: '', sport: '', category: 'Masculino' as 'Masculino' | 'Feminino', date: '', time: '', location: ''
     });
     const [scoreForm, setScoreForm] = useState({ scoreA: 0, scoreB: 0 });
     const [settingsForm, setSettingsForm] = useState({
@@ -88,61 +53,75 @@ const AdminDashboard: React.FC = () => {
     };
 
     const handleSaveNewMatch = () => {
-        if (!newMatchForm.teamA || !newMatchForm.teamB || !newMatchForm.sport || !newMatchForm.time || !newMatchForm.location) {
+        if (!newMatchForm.teamA || !newMatchForm.teamB || !newMatchForm.sport || !newMatchForm.time || !newMatchForm.location || !newMatchForm.date) {
             showNotification('Preencha todos os campos!');
             return;
         }
-        const newMatch = {
+        const newMatch: any = { // Using any to bypass deep Team type check since we just need simple mapping for now
             id: 'm' + Date.now(),
-            timeA: newMatchForm.teamA,
-            timeB: newMatchForm.teamB,
-            placarA: 0,
-            placarB: 0,
-            modalidade: newMatchForm.sport,
-            status: 'SCHEDULED',
-            local: `${newMatchForm.location} - ${newMatchForm.time}`
+            teamA: { id: 't1', name: newMatchForm.teamA, course: newMatchForm.teamA },
+            teamB: { id: 't2', name: newMatchForm.teamB, course: newMatchForm.teamB },
+            scoreA: 0,
+            scoreB: 0,
+            sport: newMatchForm.sport,
+            category: newMatchForm.category,
+            status: 'scheduled',
+            date: newMatchForm.date,
+            time: newMatchForm.time,
+            location: newMatchForm.location
         };
-        setMatches([newMatch as any, ...matches]);
+        addMatch(newMatch);
         setIsNewMatchOpen(false);
-        setNewMatchForm({ teamA: '', teamB: '', sport: '', time: '', location: '' });
+        setNewMatchForm({ teamA: '', teamB: '', sport: '', category: 'Masculino', date: '', time: '', location: '' });
         showNotification("Partida criada com sucesso!");
     };
 
     const handleToggleStatus = (matchId: string) => {
-        setMatches(matches.map(m => {
-            if (m.id === matchId) {
-                const newStatus = m.status === 'LIVE' ? 'SCHEDULED' : 'LIVE';
-                showNotification(`Status alterado para ${newStatus}`);
-                return { ...m, status: newStatus };
-            }
-            return m;
-        }));
+        const match = matches.find(m => m.id === matchId);
+        if (match) {
+            const newStatus = match.status === 'live' ? 'scheduled' : 'live';
+            updateMatch({ ...match, status: newStatus });
+            showNotification(`Status alterado para ${newStatus.toUpperCase()}`);
+        }
     };
 
     const handleUpdatePlacar = () => {
         if (!selectedMatch) return;
-        setMatches(matches.map(m => {
-            if (m.id === selectedMatch.id) {
-                return { ...m, placarA: scoreForm.scoreA, placarB: scoreForm.scoreB };
-            }
-            return m;
-        }));
+
+        let newStatus = selectedMatch.status;
+        if (scoreForm.scoreA > 0 || scoreForm.scoreB > 0) {
+            newStatus = 'finished';
+        }
+
+        updateMatch({
+            ...selectedMatch,
+            scoreA: scoreForm.scoreA,
+            scoreB: scoreForm.scoreB,
+            status: newStatus
+        });
         setIsScoreOpen(false);
-        showNotification("Placar atualizado!");
+        showNotification("Placar atualizado e finalizado!");
+    };
+
+    const handleDeleteMatch = (matchId: string) => {
+        if (window.confirm('Tem certeza que deseja excluir esta partida?')) {
+            deleteMatch(matchId);
+            showNotification("Partida excluída com sucesso!");
+        }
     };
 
     const filteredMatches = matches.filter(match => {
         if (filter === 'all') return true;
-        if (filter === 'male' && match.modalidade.toLowerCase().includes('masculino')) return true;
-        if (filter === 'female' && match.modalidade.toLowerCase().includes('feminino')) return true;
+        if (filter === 'male' && match.category === 'Masculino') return true;
+        if (filter === 'female' && match.category === 'Feminino') return true;
         return false;
     });
 
-    const pendingResults = matches.filter(m => m.placarA === 0 && m.placarB === 0).length;
+    const pendingResults = matches.filter(m => m.scoreA === 0 && m.scoreB === 0 && m.status !== 'finished').length;
 
     const stats = [
         { label: 'Total Atletas', value: '1,240', icon: <Users size={20} />, color: '#3b82f6', type: 'athletes' },
-        { label: 'Partidas Hoje', value: matches.filter(m => m.status === 'LIVE').length.toString(), icon: <Trophy size={20} />, color: '#ef4444', type: 'matches' },
+        { label: 'Partidas Hoje', value: matches.filter(m => m.status === 'live').length.toString(), icon: <Trophy size={20} />, color: '#ef4444', type: 'matches' },
         { label: 'Cursos Inscritos', value: coursesList.length.toString(), icon: <BookOpen size={20} />, color: '#10b981', type: 'courses' },
         { label: 'Resultados Pendentes', value: pendingResults.toString(), icon: <PlusCircle size={20} />, color: '#f59e0b', type: 'pending' },
     ];
@@ -361,20 +340,20 @@ const AdminDashboard: React.FC = () => {
                                         {filteredMatches.map(match => (
                                             <tr key={match.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                                 <td style={{ padding: '16px 20px' }}>
-                                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{match.timeA} {match.placarA} x {match.placarB} {match.timeB}</div>
-                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{match.local}</div>
+                                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{match.teamA.course} {match.scoreA} x {match.scoreB} {match.teamB.course}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{match.location} - {match.date ? `${match.date} ` : ''}{match.time}</div>
                                                 </td>
-                                                <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>{match.modalidade}</td>
+                                                <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>{match.sport} {match.category}</td>
                                                 <td style={{ padding: '16px 20px' }}>
                                                     <span style={{
                                                         padding: '4px 8px',
                                                         borderRadius: '4px',
                                                         fontSize: '11px',
                                                         fontWeight: 700,
-                                                        background: match.status === 'LIVE' ? 'rgba(227, 6, 19, 0.1)' : 'rgba(255, 255, 255, 0.05)',
-                                                        color: match.status === 'LIVE' ? 'var(--accent-color)' : 'var(--text-secondary)'
+                                                        background: match.status === 'live' ? 'rgba(227, 6, 19, 0.1)' : 'rgba(255, 255, 255, 0.05)',
+                                                        color: match.status === 'live' ? 'var(--accent-color)' : 'var(--text-secondary)'
                                                     }}>
-                                                        {match.status}
+                                                        {match.status.toUpperCase()}
                                                     </span>
                                                 </td>
                                                 <td style={{ padding: '16px 20px' }}>
@@ -389,7 +368,7 @@ const AdminDashboard: React.FC = () => {
                                                     <button
                                                         onClick={() => {
                                                             setSelectedMatch(match);
-                                                            setScoreForm({ scoreA: match.placarA || 0, scoreB: match.placarB || 0 });
+                                                            setScoreForm({ scoreA: match.scoreA || 0, scoreB: match.scoreB || 0 });
                                                             setIsScoreOpen(true);
                                                         }}
                                                         style={{ color: 'var(--text-secondary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s' }}
@@ -397,6 +376,14 @@ const AdminDashboard: React.FC = () => {
                                                         onMouseOut={e => e.currentTarget.style.opacity = '1'}
                                                     >
                                                         Placar
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteMatch(match.id)}
+                                                        style={{ color: 'var(--text-secondary)', fontWeight: 600, background: 'none', border: 'none', cursor: 'pointer', transition: 'opacity 0.2s', marginLeft: '15px' }}
+                                                        onMouseOver={e => e.currentTarget.style.color = 'var(--live-color)'}
+                                                        onMouseOut={e => e.currentTarget.style.color = 'var(--text-secondary)'}
+                                                    >
+                                                        Excluir
                                                     </button>
                                                 </td>
                                             </tr>
@@ -426,10 +413,10 @@ const AdminDashboard: React.FC = () => {
                                         {matches.map(match => (
                                             <tr key={match.id} style={{ borderBottom: '1px solid var(--border-color)' }}>
                                                 <td style={{ padding: '16px 20px' }}>
-                                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{match.timeA} x {match.timeB}</div>
-                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{match.local}</div>
+                                                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{match.teamA.course} x {match.teamB.course}</div>
+                                                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{match.location} - {match.date ? `${match.date} ` : ''}{match.time}</div>
                                                 </td>
-                                                <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>{match.modalidade}</td>
+                                                <td style={{ padding: '16px 20px', color: 'var(--text-secondary)' }}>{match.sport} {match.category}</td>
                                                 <td style={{ padding: '16px 20px' }}>
                                                     <button
                                                         onClick={() => showNotification("Editar Horário em desenvolvimento...")}
@@ -780,15 +767,24 @@ const AdminDashboard: React.FC = () => {
                         <input type="text" placeholder="Equipe B (Ex: Fefesp)" style={inputStyle} value={newMatchForm.teamB} onChange={e => setNewMatchForm({ ...newMatchForm, teamB: e.target.value })} />
                         <select style={inputStyle} value={newMatchForm.sport} onChange={e => setNewMatchForm({ ...newMatchForm, sport: e.target.value })}>
                             <option value="">Selecione a Modalidade</option>
-                            <option value="Futsal Masculino">Futsal Masculino</option>
-                            <option value="Futsal Feminino">Futsal Feminino</option>
-                            <option value="Vôlei Masculino">Vôlei Masculino</option>
-                            <option value="Vôlei Feminino">Vôlei Feminino</option>
-                            <option value="Handebol Masculino">Handebol Masculino</option>
-                            <option value="Handebol Feminino">Handebol Feminino</option>
+                            {AVAILABLE_SPORTS.map(sport => (
+                                <option key={sport} value={sport}>{sport}</option>
+                            ))}
                         </select>
-                        <input type="time" style={inputStyle} value={newMatchForm.time} onChange={e => setNewMatchForm({ ...newMatchForm, time: e.target.value })} />
-                        <input type="text" placeholder="Local (Ex: Poliesportivo)" style={inputStyle} value={newMatchForm.location} onChange={e => setNewMatchForm({ ...newMatchForm, location: e.target.value })} />
+                        <select style={inputStyle} value={newMatchForm.category} onChange={e => setNewMatchForm({ ...newMatchForm, category: e.target.value as 'Masculino' | 'Feminino' })}>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                            <input type="date" style={inputStyle} value={newMatchForm.date} onChange={e => setNewMatchForm({ ...newMatchForm, date: e.target.value })} />
+                            <input type="time" style={inputStyle} value={newMatchForm.time} onChange={e => setNewMatchForm({ ...newMatchForm, time: e.target.value })} />
+                        </div>
+                        <select style={inputStyle} value={newMatchForm.location} onChange={e => setNewMatchForm({ ...newMatchForm, location: e.target.value })}>
+                            <option value="">Selecione o Local</option>
+                            <option value="Centro de Treinamento">Centro de Treinamento</option>
+                            <option value="Poliesportivo Unisanta (Bloco M)">Poliesportivo Unisanta (Bloco M)</option>
+                            <option value="Laerte Gonçalves (Bloco D)">Laerte Gonçalves (Bloco D)</option>
+                        </select>
 
                         <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
                             <button onClick={handleSaveNewMatch} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Partida</button>

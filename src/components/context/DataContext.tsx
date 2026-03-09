@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AVAILABLE_COURSES, mockAthletes as initialAthletes } from '../../data/mockData';
+import { AVAILABLE_COURSES, mockAthletes as initialAthletes, mockMatches, type Match } from '../../data/mockData';
 
 export interface Athlete {
     id: string;
@@ -19,6 +19,10 @@ interface DataContextType {
     removeAthlete: (id: string) => void;
     customEmblems: Record<string, string>;
     addCustomEmblem: (course: string, base64: string) => void;
+    matches: Match[];
+    addMatch: (match: Match) => void;
+    updateMatch: (match: Match) => void;
+    deleteMatch: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -52,9 +56,19 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return {};
     });
 
+    const [matches, setMatches] = useState<Match[]>(() => {
+        const saved = localStorage.getItem('jg_matches');
+        if (saved) return JSON.parse(saved);
+        return mockMatches;
+    });
+
     useEffect(() => {
         localStorage.setItem('jg_emblems', JSON.stringify(customEmblems));
     }, [customEmblems]);
+
+    useEffect(() => {
+        localStorage.setItem('jg_matches', JSON.stringify(matches));
+    }, [matches]);
 
     const addCourse = (course: string) => setCourses(prev => [course, ...prev]);
     const removeCourse = (courseToRemove: string) => {
@@ -72,11 +86,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setCustomEmblems(prev => ({ ...prev, [course]: base64 }));
     };
 
+    const addMatch = (match: Match) => setMatches(prev => [match, ...prev]);
+    const updateMatch = (updatedMatch: Match) => setMatches(prev => prev.map(m => m.id === updatedMatch.id ? updatedMatch : m));
+    const deleteMatch = (id: string) => setMatches(prev => prev.filter(m => m.id !== id));
+
     return (
         <DataContext.Provider value={{
             courses, addCourse, removeCourse,
             athletes, addAthlete, removeAthlete,
-            customEmblems, addCustomEmblem
+            customEmblems, addCustomEmblem,
+            matches, addMatch, updateMatch, deleteMatch
         }}>
             {children}
         </DataContext.Provider>

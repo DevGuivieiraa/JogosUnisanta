@@ -8,9 +8,10 @@ import ModalitiesModal from '../components/Modals/ModalitiesModal';
 import RankingModal from '../components/Modals/RankingModal';
 import Login from './Login';
 import AdminDashboard from '../components/Admin/AdminDashboard';
-import { mockMatches, mockNews, type Match } from '../data/mockData';
+import { mockNews, type Match } from '../data/mockData';
 import Countdown from '../components/Layout/Countdown';
 import { useAuth } from '../context/AuthContext';
+import { useData } from '../components/context/DataContext';
 import {
     Calendar,
     ChevronDown,
@@ -19,6 +20,7 @@ import {
 
 const Home: React.FC = () => {
     const { user } = useAuth();
+    const { matches } = useData();
     const location = useLocation();
     const navigate = useNavigate();
     const [showLogin, setShowLogin] = useState(false);
@@ -49,7 +51,7 @@ const Home: React.FC = () => {
         }
     }, [location.search, navigate, location.pathname]);
 
-    const filteredMatches = mockMatches.filter(m => {
+    const filteredMatches = matches.filter(m => {
         const sportMatch = !selectedSport || m.sport === selectedSport;
         const categoryMatch = selectedCategory === 'Todos' || m.category === selectedCategory;
 
