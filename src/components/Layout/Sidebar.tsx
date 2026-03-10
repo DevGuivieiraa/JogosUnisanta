@@ -297,10 +297,30 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
 
                         {/* Action Button */}
                         <a
-                            href="/docs/tabela-oficial-unisanta-2025.pdf"
-                            target="_blank"
-                            rel="noopener noreferrer"
+                            href="/pdf/tabela-oficial-unisanta-2025.pdf"
                             download="tabela-oficial-unisanta-2025.pdf"
+                            onClick={async (e) => {
+                                e.preventDefault();
+                                try {
+                                    const response = await fetch('/pdf/tabela-oficial-unisanta-2025.pdf', { method: 'HEAD' });
+                                    const contentType = response.headers.get('content-type');
+                                    if (response.ok && contentType && contentType.includes('pdf')) {
+                                        const link = document.createElement('a');
+                                        link.href = '/pdf/tabela-oficial-unisanta-2025.pdf';
+                                        link.download = 'tabela-oficial-unisanta-2025.pdf';
+                                        link.target = '_blank';
+                                        document.body.appendChild(link);
+                                        link.click();
+                                        document.body.removeChild(link);
+                                    } else {
+                                        console.error('O arquivo da tabela oficial ainda não está disponível no servidor.');
+                                        alert('O arquivo da tabela oficial ainda não está disponível no servidor.');
+                                    }
+                                } catch (error) {
+                                    console.error('O arquivo da tabela oficial ainda não está disponível no servidor.', error);
+                                    alert('O arquivo da tabela oficial ainda não está disponível no servidor.');
+                                }
+                            }}
                             style={{
                                 display: 'flex',
                                 alignItems: 'center',
