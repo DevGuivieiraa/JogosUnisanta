@@ -116,8 +116,9 @@ const Home: React.FC = () => {
                 padding: '30px',
             }}>
                 {user?.role === 'superadmin' && (
-                    <div style={{ display: 'flex', gap: '10px', marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
+                    <div className="admin-toggle-container" style={{ display: 'flex', gap: '10px', marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
                         <button
+                            className="admin-toggle-btn"
                             onClick={() => setActiveView('public')}
                             style={{
                                 padding: '10px 24px',
@@ -132,6 +133,7 @@ const Home: React.FC = () => {
                             VISÃO PÚBLICA
                         </button>
                         <button
+                            className="admin-toggle-btn"
                             onClick={() => setActiveView('admin')}
                             style={{
                                 padding: '10px 24px',

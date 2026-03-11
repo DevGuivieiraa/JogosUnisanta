@@ -75,6 +75,18 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                     zIndex: 1100
                 }}
             >
+            <div className="mobile-only" style={{ padding: '0 20px 15px', borderBottom: '1px solid var(--border-color)', marginBottom: '15px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)', fontWeight: 'bold', fontSize: '13px', marginBottom: '10px' }}>
+                    <LayoutGrid size={16} />
+                    NAVEGAÇÃO PÚBLICA
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <Link to="/" onClick={() => setIsMobileOpen(false)} className="sidebar-link" style={{ padding: '10px 20px', fontSize: '14px', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500 }}>Resultados</Link>
+                    <Link to="/participantes" onClick={() => setIsMobileOpen(false)} className="sidebar-link" style={{ padding: '10px 20px', fontSize: '14px', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500 }}>Participantes</Link>
+                    <Link to="/noticias" onClick={() => setIsMobileOpen(false)} className="sidebar-link" style={{ padding: '10px 20px', fontSize: '14px', color: 'var(--text-primary)', textDecoration: 'none', fontWeight: 500 }}>Notícias</Link>
+                </div>
+            </div>
+
             <div style={{ padding: '0 20px 15px', borderBottom: '1px solid var(--border-color)', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '14px' }}>
                     <Trophy size={18} />

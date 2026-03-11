@@ -230,7 +230,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Stats Grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px' }}>
+            <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '40px' }}>
                 {stats.map(stat => (
                     <div
                         key={stat.label}
@@ -261,7 +261,7 @@ const AdminDashboard: React.FC = () => {
             </div>
 
             {/* Main Admin Area */}
-            <div style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '30px' }}>
+            <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '240px 1fr', gap: '30px' }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                     {[
                         { id: 'overview', label: 'Visão Geral', icon: <Layout size={18} /> },
@@ -368,8 +368,8 @@ const AdminDashboard: React.FC = () => {
                                 </button>
                             </div>
 
-                            <div style={{ padding: '0', overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                            <div className="table-responsive-container" style={{ padding: '0' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', minWidth: '600px' }}>
                                     <thead>
                                         <tr style={{ textAlign: 'left', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-hover)' }}>
                                             <th style={{ padding: '16px 20px', fontWeight: 600 }}>PARTIDA</th>
@@ -442,8 +442,8 @@ const AdminDashboard: React.FC = () => {
                                 <Clock size={24} color="var(--accent-color)" />
                                 <h2 style={{ fontSize: '18px', fontWeight: 700 }}>Gerenciar Todas as Partidas</h2>
                             </div>
-                            <div style={{ padding: '0', overflowX: 'auto' }}>
-                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                            <div className="table-responsive-container" style={{ padding: '0' }}>
+                                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px', minWidth: '500px' }}>
                                     <thead>
                                         <tr style={{ textAlign: 'left', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-color)', backgroundColor: 'var(--bg-hover)' }}>
                                             <th style={{ padding: '16px 20px', fontWeight: 600 }}>PARTIDA</th>
