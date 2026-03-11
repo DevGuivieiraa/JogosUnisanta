@@ -66,3 +66,59 @@ button {
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
 }
+
+.mobile-only {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --sidebar-width: 0px;
+  }
+  
+  .mobile-only {
+    display: flex !important;
+  }
+  
+  .desktop-only {
+    display: none !important;
+  }
+
+  .sidebar-container {
+    width: 280px !important;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .sidebar-container.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+  }
+
+  .main-content {
+    padding: 20px !important;
+  }
+
+  .modal-mobile-fullscreen {
+    width: 95% !important;
+    max-width: 95% !important;
+    height: 90vh !important;
+  }
+
+  .table-responsive-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -20px;
+    padding: 0 20px;
+  }
+
+  .responsive-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Wrap flex items */
+  .mobile-flex-col {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}

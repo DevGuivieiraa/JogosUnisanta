@@ -1,4 +1,4 @@
-import { useState, type FC } from 'react';
+import { useState, useEffect, type FC } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import {
     Trophy,
@@ -18,8 +18,15 @@ interface SidebarProps {
 
 const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRanking }) => {
     const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+    const [isMobileOpen, setIsMobileOpen] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+
+    useEffect(() => {
+        const handleToggle = () => setIsMobileOpen(prev => !prev);
+        document.addEventListener('toggle-mobile-menu', handleToggle);
+        return () => document.removeEventListener('toggle-mobile-menu', handleToggle);
+    }, []);
 
     const principalSports = [
         { name: 'Futsal', icon: '⚽' },
@@ -46,18 +53,28 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
     };
 
     return (
-        <aside style={{
-            width: 'var(--sidebar-width)',
-            position: 'fixed',
-            top: 'var(--header-height)',
-            left: 0,
-            bottom: 0,
-            background: 'var(--bg-main)',
-            borderRight: '1px solid var(--border-color)',
-            padding: '20px 0',
-            overflowY: 'auto',
-            zIndex: 40
-        }}>
+        <>
+            {isMobileOpen && (
+                <div
+                    className="mobile-only"
+                    onClick={() => setIsMobileOpen(false)}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 35 }}
+                />
+            )}
+            <aside 
+                className={`sidebar-container ${isMobileOpen ? 'open' : ''}`}
+                style={{
+                    position: 'fixed',
+                    top: 'var(--header-height)',
+                    left: 0,
+                    bottom: 0,
+                    background: 'var(--bg-main)',
+                    borderRight: '1px solid var(--border-color)',
+                    padding: '20px 0',
+                    overflowY: 'auto',
+                    zIndex: 40
+                }}
+            >
             <div style={{ padding: '0 20px 15px', borderBottom: '1px solid var(--border-color)', marginBottom: '15px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: 'var(--accent-color)', fontWeight: 'bold', fontSize: '14px' }}>
                     <Trophy size={18} />
@@ -354,6 +371,7 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                 </div>
             )}
         </aside>
+        </>
     );
 };
 

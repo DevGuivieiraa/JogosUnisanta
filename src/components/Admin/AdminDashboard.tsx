@@ -1118,7 +1118,7 @@ const AdminDashboard: React.FC = () => {
 const ModalOverlay: React.FC<{ children: React.ReactNode, onClose: () => void }> = ({ children, onClose }) => (
     <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 3000, backdropFilter: 'blur(5px)' }}>
         <div style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }} onClick={onClose} />
-        <div className="premium-card" style={{ padding: '30px', width: '100%', maxWidth: '400px', position: 'relative', zIndex: 3001 }}>
+        <div className="premium-card modal-mobile-fullscreen" style={{ padding: '30px', width: '100%', maxWidth: '400px', position: 'relative', zIndex: 3001, maxHeight: '90vh', overflowY: 'auto' }}>
             {children}
         </div>
     </div>

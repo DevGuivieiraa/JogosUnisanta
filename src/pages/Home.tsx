@@ -110,7 +110,7 @@ const Home: React.FC = () => {
                 onShowRanking={() => setShowRanking(true)}
             />
 
-            <main style={{
+            <main className="main-content" style={{
                 marginLeft: 'var(--sidebar-width)',
                 marginTop: 'var(--header-height)',
                 padding: '30px',
@@ -151,7 +151,7 @@ const Home: React.FC = () => {
                 {activeView === 'admin' && user?.role === 'superadmin' ? (
                     <AdminDashboard />
                 ) : (
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px' }}>
+                    <div className="responsive-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '30px' }}>
                         {/* Left Column: Matches */}
                         <section>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>

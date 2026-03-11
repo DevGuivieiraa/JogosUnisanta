@@ -1,5 +1,5 @@
 import { type FC, useState, useMemo } from 'react';
-import { User as UserIcon, Trophy, LayoutDashboard } from 'lucide-react';
+import { User as UserIcon, Trophy, LayoutDashboard, Menu } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import ProfileModal from '../Modals/ProfileModal';
@@ -51,11 +51,20 @@ const Header: FC = () => {
                 borderBottom: '1px solid var(--border-color)'
             }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-                    <Link to="/" style={{ fontSize: '24px', fontWeight: 'bold', letterSpacing: '-1px', textDecoration: 'none', color: 'inherit' }}>
-                        <span style={{ color: 'var(--accent-color)' }}>JOGOS</span> UNISANTA
-                    </Link>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                        <button
+                            className="mobile-only"
+                            onClick={() => document.dispatchEvent(new CustomEvent('toggle-mobile-menu'))}
+                            style={{ padding: 0, color: 'var(--text-primary)', border: 'none', background: 'transparent' }}
+                        >
+                            <Menu size={24} />
+                        </button>
+                        <Link to="/" style={{ fontSize: '24px', fontWeight: 'bold', letterSpacing: '-1px', textDecoration: 'none', color: 'inherit' }}>
+                            <span style={{ color: 'var(--accent-color)' }}>JOGOS</span> UNISANTA
+                        </Link>
+                    </div>
 
-                    <nav style={{ display: 'flex', gap: '20px', fontSize: '14px', fontWeight: 500 }}>
+                    <nav className="desktop-only" style={{ display: 'flex', gap: '20px', fontSize: '14px', fontWeight: 500 }}>
                         <Link to="/" style={{
                             color: isActive('/') ? 'var(--text-primary)' : 'var(--text-secondary)',
                             textDecoration: 'none',

@@ -39,7 +39,7 @@ const ModalDetalhes: FC<ModalDetalhesProps> = ({ isOpen, onClose, courseData }) 
             backdropFilter: 'blur(5px)',
             animation: 'fadeIn 0.2s ease-out'
         }} onClick={onClose}>
-            <div style={{
+            <div className="modal-mobile-fullscreen" style={{
                 backgroundColor: '#121212',
                 borderRadius: '16px',
                 width: '100%',
@@ -160,7 +160,7 @@ const ModalDetalhes: FC<ModalDetalhesProps> = ({ isOpen, onClose, courseData }) 
                     {/* Bottom Stats */}
                     <div style={{
                         display: 'grid',
-                        gridTemplateColumns: 'repeat(3, 1fr)',
+                        gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                         gap: '20px'
                     }}>
                         {/* Col 1 */}

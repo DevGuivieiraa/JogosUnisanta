@@ -48,7 +48,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
             zIndex: 2000,
             padding: '20px'
         }}>
-            <div className="premium-card animate-in" style={{
+            <div className="premium-card animate-in modal-mobile-fullscreen" style={{
                 width: '100%',
                 maxWidth: '700px',
                 height: '85vh',
@@ -104,7 +104,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                 </div>
 
                 {/* Content */}
-                <div style={{
+                <div className="table-responsive-container" style={{
                     overflowY: 'auto',
                     padding: '20px',
                     flex: 1

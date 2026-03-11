@@ -13,7 +13,7 @@ const MelhoresAtletas: FC = () => {
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Header />
             <Sidebar onShowRanking={() => setShowRanking(true)} />
-            <main style={{ marginLeft: 'var(--sidebar-width)', marginTop: 'var(--header-height)', padding: '40px' }}>
+            <main className="main-content" style={{ marginLeft: 'var(--sidebar-width)', marginTop: 'var(--header-height)', padding: '40px' }}>
                 <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
                     <div style={{ marginBottom: '30px' }}>
                         <h1 style={{ fontSize: '32px', fontWeight: 800, marginBottom: '10px' }}>Melhores Atletas</h1>
