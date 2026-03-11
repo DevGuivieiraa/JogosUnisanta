@@ -31,8 +31,23 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Carregar do localStorage ou usar os mocks iniciais
     const [courses, setCourses] = useState<string[]>(() => {
         const saved = localStorage.getItem('jg_courses');
-        if (saved) return JSON.parse(saved);
-        return AVAILABLE_COURSES;
+        let parsed: string[] = saved ? JSON.parse(saved) : AVAILABLE_COURSES;
+        
+        const newCoursesObjects = [
+            { id: 'm-sjudas', nome: 'Medicina', faculdade: 'São Judas', emblema: '/emblemas/medicina_sao_judas.png' },
+            { id: 'mv-unimes', nome: 'Medicina Veterinária', faculdade: 'Unimes', emblema: '/emblemas/medicina_veterinaria_unimes.png' },
+            { id: 'enf-uni', nome: 'Enfermagem', faculdade: 'Unisanta', emblema: '/emblemas/enfermagem_unisanta.png' },
+            { id: 'fisio-unip', nome: 'Fisioterapia', faculdade: 'Unip', emblema: '/emblemas/fisioterapia_unip.png' }
+        ];
+
+        newCoursesObjects.forEach(obj => {
+            const strForm = `${obj.nome} - ${obj.faculdade}`;
+            if (!parsed.includes(strForm)) {
+                parsed.push(strForm);
+            }
+        });
+
+        return parsed.sort((a,b) => a.localeCompare(b));
     });
 
     const [athletes, setAthletes] = useState<Athlete[]>(() => {
@@ -52,8 +67,21 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const [customEmblems, setCustomEmblems] = useState<Record<string, string>>(() => {
         const saved = localStorage.getItem('jg_emblems');
-        if (saved) return JSON.parse(saved);
-        return {};
+        let parsed: Record<string, string> = saved ? JSON.parse(saved) : {};
+        
+        const newCoursesObjects = [
+            { id: 'm-sjudas', nome: 'Medicina', faculdade: 'São Judas', emblema: '/emblemas/medicina_sao_judas.png' },
+            { id: 'mv-unimes', nome: 'Medicina Veterinária', faculdade: 'Unimes', emblema: '/emblemas/medicina_veterinaria_unimes.png' },
+            { id: 'enf-uni', nome: 'Enfermagem', faculdade: 'Unisanta', emblema: '/emblemas/enfermagem_unisanta.png' },
+            { id: 'fisio-unip', nome: 'Fisioterapia', faculdade: 'Unip', emblema: '/emblemas/fisioterapia_unip.png' }
+        ];
+
+        newCoursesObjects.forEach(obj => {
+            const strForm = `${obj.nome} - ${obj.faculdade}`;
+            parsed[strForm] = obj.emblema;
+        });
+
+        return parsed;
     });
 
     const [matches, setMatches] = useState<Match[]>(() => {
