@@ -10,13 +10,10 @@ interface RankingModalProps {
 const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
     const { courses, customEmblems } = useData();
 
-    const getTeamEmblem = (teamName: string, fullCourseName: string) => {
+    const getTeamEmblem = (fullCourseName: string) => {
         if (customEmblems[fullCourseName]) return customEmblems[fullCourseName];
-
-        const foundCourse = Object.keys(COURSE_EMBLEMS).find(courseKey =>
-            courseKey.toLowerCase().includes(teamName.toLowerCase())
-        );
-        return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
+        if (fullCourseName in COURSE_EMBLEMS) return `/emblemas/${COURSE_EMBLEMS[fullCourseName]}`;
+        return null;
     };
 
     const sortedRanking = useMemo(() => {
@@ -163,26 +160,47 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                                                     justifyContent: 'center'
                                                 }}>
                                                     {(() => {
-                                                        const emblemUrl = getTeamEmblem(courseName, item.course);
+                                                        const emblemUrl = getTeamEmblem(item.course);
                                                         return emblemUrl ? (
-                                                            <img
-                                                                src={emblemUrl}
-                                                                alt={courseName}
-                                                                style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
-                                                                onError={(e) => {
-                                                                    e.currentTarget.style.display = 'none';
-                                                                    const fallback = e.currentTarget.nextElementSibling as HTMLElement;
-                                                                    if (fallback) fallback.style.display = 'block';
-                                                                }}
-                                                            />
-                                                        ) : null;
+                                                            <>
+                                                                <img
+                                                                    src={emblemUrl}
+                                                                    alt={courseName}
+                                                                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }}
+                                                                    onError={(e) => {
+                                                                        e.currentTarget.style.display = 'none';
+                                                                        const fallback = e.currentTarget.nextElementSibling as HTMLElement;
+                                                                        if (fallback) fallback.style.display = 'flex';
+                                                                    }}
+                                                                />
+                                                                <div style={{
+                                                                    display: 'none',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    borderRadius: '8px',
+                                                                    background: 'var(--bg-hover)',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    fontSize: '16px'
+                                                                }}>
+                                                                    {icon}
+                                                                </div>
+                                                            </>
+                                                        ) : (
+                                                            <div style={{
+                                                                width: '32px',
+                                                                height: '32px',
+                                                                borderRadius: '8px',
+                                                                background: 'var(--bg-hover)',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                justifyContent: 'center',
+                                                                fontSize: '16px'
+                                                            }}>
+                                                                {icon}
+                                                            </div>
+                                                        );
                                                     })()}
-                                                    <span style={{
-                                                        fontSize: '20px',
-                                                        display: getTeamEmblem(courseName, item.course) ? 'none' : 'block'
-                                                    }}>
-                                                        {icon}
-                                                    </span>
                                                 </div>
                                                 <div>
                                                     <div style={{ fontSize: '14px', fontWeight: 700 }}>{courseName}</div>
