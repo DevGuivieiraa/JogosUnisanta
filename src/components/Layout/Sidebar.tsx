@@ -58,7 +58,7 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                 <div
                     className="mobile-only"
                     onClick={() => setIsMobileOpen(false)}
-                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 35 }}
+                    style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1050 }}
                 />
             )}
             <aside 
@@ -72,7 +72,7 @@ const Sidebar: FC<SidebarProps> = ({ onShowModalities, onSelectSport, onShowRank
                     borderRight: '1px solid var(--border-color)',
                     padding: '20px 0',
                     overflowY: 'auto',
-                    zIndex: 40
+                    zIndex: 1100
                 }}
             >
             <div style={{ padding: '0 20px 15px', borderBottom: '1px solid var(--border-color)', marginBottom: '15px' }}>

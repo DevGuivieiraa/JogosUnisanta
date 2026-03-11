@@ -63,6 +63,7 @@ const ModalDetalhes: FC<ModalDetalhesProps> = ({ isOpen, onClose, courseData }) 
                 }} />
 
                 <button
+                    id="modal-close-btn"
                     onClick={onClose}
                     style={{
                         position: 'absolute',

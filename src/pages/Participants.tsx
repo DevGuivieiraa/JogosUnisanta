@@ -201,7 +201,7 @@ const Participants: FC = () => {
                     </div>
 
                     {activeTab === 'courses' && (
-                        <div style={{
+                        <div className="participants-grid" style={{
                             display: 'grid',
                             gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
                             gap: '20px'
@@ -235,6 +235,7 @@ const Participants: FC = () => {
                                                 <img
                                                     src={emblemUrl}
                                                     alt={`${name} emblem`}
+                                                    className="mobile-scale-icon"
                                                     style={{ width: '60px', height: 'auto', objectFit: 'contain' }}
                                                     onError={(e) => {
                                                         e.currentTarget.style.display = 'none';
@@ -258,7 +259,7 @@ const Participants: FC = () => {
                                                 </div>
                                             </div>
                                         ) : (
-                                            <div style={{
+                                            <div className="mobile-scale-icon" style={{
                                                 width: '48px',
                                                 height: '48px',
                                                 borderRadius: '12px',
@@ -273,10 +274,10 @@ const Participants: FC = () => {
                                             </div>
                                         )}
                                         <div>
-                                            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                            <div className="mobile-scale-text-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
                                                 {name}
                                             </div>
-                                            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
+                                            <div className="mobile-scale-text" style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px' }}>
                                                 <School size={12} />
                                                 {university}
                                             </div>
@@ -350,7 +351,7 @@ const Participants: FC = () => {
                                 </select>
                             </div>
 
-                            <div style={{
+                            <div className="participants-grid" style={{
                                 display: 'grid',
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
                                 gap: '20px'
@@ -358,7 +359,7 @@ const Participants: FC = () => {
                                 {filteredAthletes.map(athlete => (
                                     <div key={athlete.id} className="premium-card hover-glow" style={{ padding: '20px', cursor: 'pointer' }}>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '15px' }}>
-                                            <div style={{
+                                            <div className="mobile-scale-icon" style={{
                                                 width: '50px',
                                                 height: '50px',
                                                 borderRadius: '50%',
@@ -373,13 +374,13 @@ const Participants: FC = () => {
                                                 {athlete.firstName[0]}{athlete.lastName[0]}
                                             </div>
                                             <div>
-                                                <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
+                                                <div className="mobile-scale-text-title" style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>
                                                     {athlete.firstName} {athlete.lastName}
                                                 </div>
-                                                <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                                                <div className="mobile-scale-text" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
                                                     {athlete.course}
                                                 </div>
-                                                <div style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', opacity: 0.8 }}>
+                                                <div className="mobile-scale-text" style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '2px', opacity: 0.8 }}>
                                                     {athlete.institution}
                                                 </div>
                                             </div>

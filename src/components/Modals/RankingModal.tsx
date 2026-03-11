@@ -85,21 +85,22 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                         </div>
                     </div>
                     <button
+                        id="modal-close-btn"
                         onClick={onClose}
                         style={{
-                            background: 'var(--bg-hover)',
+                            background: 'rgba(255,255,255,0.1)',
                             border: 'none',
-                            color: 'white',
-                            width: '36px',
-                            height: '36px',
-                            borderRadius: '50%',
+                            color: 'var(--text-secondary)',
                             cursor: 'pointer',
+                            padding: '6px',
+                            borderRadius: '50%',
                             display: 'flex',
                             alignItems: 'center',
-                            justifyContent: 'center'
+                            justifyContent: 'center',
+                            transition: 'all 0.2s'
                         }}
-                    >
-                        <X size={20} />
+                        className="hover-bg-close"
+                    >    <X size={20} />
                     </button>
                 </div>
 
