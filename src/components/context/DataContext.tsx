@@ -1,14 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { AVAILABLE_COURSES, mockAthletes as initialAthletes, mockMatches, type Match } from '../../data/mockData';
-
-export interface Athlete {
-    id: string;
-    firstName: string;
-    lastName: string;
-    institution: string;
-    course: string;
-    sports: string[];
-}
+import { AVAILABLE_COURSES, mockAthletes as initialAthletes, mockMatches, type Match, type Athlete } from '../../data/mockData';
 
 interface DataContextType {
     courses: string[];
@@ -23,6 +14,9 @@ interface DataContextType {
     addMatch: (match: Match) => void;
     updateMatch: (match: Match) => void;
     deleteMatch: (id: string) => void;
+    bestAthletes: Athlete[];
+    addBestAthlete: (athlete: Athlete) => void;
+    removeBestAthlete: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -37,7 +31,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             { id: 'm-sjudas', nome: 'Medicina', faculdade: 'São Judas', emblema: '/emblemas/medicina_sao_judas.png' },
             { id: 'mv-unimes', nome: 'Medicina Veterinária', faculdade: 'Unimes', emblema: '/emblemas/medicina_veterinaria_unimes.png' },
             { id: 'enf-uni', nome: 'Enfermagem', faculdade: 'Unisanta', emblema: '/emblemas/enfermagem_unisanta.png' },
-            { id: 'fisio-unip', nome: 'Fisioterapia', faculdade: 'Unip', emblema: '/emblemas/fisioterapia_unip.png' }
+            { id: 'fisio-unip', nome: 'Fisioterapia', faculdade: 'Unip', emblema: '/emblemas/fisioterapia_unip.png' },
+            { id: 'med-unimes', nome: 'Medicina', faculdade: 'Unimes', emblema: '/emblemas/Medicina Unimes.png' }
         ];
 
         newCoursesObjects.forEach(obj => {
@@ -90,6 +85,12 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return mockMatches;
     });
 
+    const [bestAthletes, setBestAthletes] = useState<Athlete[]>(() => {
+        const saved = localStorage.getItem('jg_bestathletes');
+        if (saved) return JSON.parse(saved);
+        return [];
+    });
+
     useEffect(() => {
         localStorage.setItem('jg_emblems', JSON.stringify(customEmblems));
     }, [customEmblems]);
@@ -110,6 +111,9 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const addAthlete = (athlete: Athlete) => setAthletes(prev => [athlete, ...prev]);
     const removeAthlete = (id: string) => setAthletes(prev => prev.filter(a => a.id !== id));
 
+    const addBestAthlete = (athlete: Athlete) => setBestAthletes(prev => [athlete, ...prev]);
+    const removeBestAthlete = (id: string) => setBestAthletes(prev => prev.filter(a => a.id !== id));
+
     const addCustomEmblem = (course: string, base64: string) => {
         setCustomEmblems(prev => ({ ...prev, [course]: base64 }));
     };
@@ -123,7 +127,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
             courses, addCourse, removeCourse,
             athletes, addAthlete, removeAthlete,
             customEmblems, addCustomEmblem,
-            matches, addMatch, updateMatch, deleteMatch
+            matches, addMatch, updateMatch, deleteMatch,
+            bestAthletes, addBestAthlete, removeBestAthlete
         }}>
             {children}
         </DataContext.Provider>

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
     Users,
@@ -27,13 +28,26 @@ const AdminDashboard: React.FC = () => {
     const [isScoreOpen, setIsScoreOpen] = useState(false);
     const [isNewCourseOpen, setIsNewCourseOpen] = useState(false);
     const [isNewAthleteOpen, setIsNewAthleteOpen] = useState(false);
+    const [isNewBestAthleteOpen, setIsNewBestAthleteOpen] = useState(false);
     const [selectedMatch, setSelectedMatch] = useState<any>(null);
     // DataContext
-    const { courses: coursesList, addCourse, removeCourse, athletes: athletesList, addAthlete, removeAthlete, customEmblems, addCustomEmblem, matches, addMatch, updateMatch, deleteMatch } = useData();
+    const { courses: coursesList, addCourse, removeCourse, athletes: athletesList, addAthlete, removeAthlete, customEmblems, addCustomEmblem, matches, addMatch, updateMatch, deleteMatch, bestAthletes, addBestAthlete, removeBestAthlete } = useData();
 
     // Form and Data States
     const [newCourseForm, setNewCourseForm] = useState({ name: '', university: '', emblem: '' });
-    const [newAthleteForm, setNewAthleteForm] = useState({ name: '', university: '', course: '', sport: '' });
+    const [newAthleteForm, setNewAthleteForm] = useState({
+        name: '',
+        university: '',
+        course: '',
+        sport: AVAILABLE_SPORTS[0]
+    });
+
+    const [newBestAthleteForm, setNewBestAthleteForm] = useState({
+        fullName: '',
+        institution: '',
+        course: '',
+        sport: AVAILABLE_SPORTS[0]
+    });
 
     // Form States
     const [newMatchForm, setNewMatchForm] = useState({
@@ -149,33 +163,60 @@ const AdminDashboard: React.FC = () => {
     };
 
     const handleDeleteCourse = (courseString: string) => {
-        if (window.confirm(`Tem certeza que deseja remover o curso "${courseString}"? Todos os atletas vinculados a ele serão excluídos automaticamente também.`)) {
+        if (window.confirm('Tem certeza que deseja remover o curso "' + courseString + '"? Todos os atletas vinculados a ele serão excluídos automaticamente também.')) {
             removeCourse(courseString);
             showNotification("Curso e atletas vinculados excluídos com sucesso!");
         }
     };
 
     const handleSaveNewAthlete = () => {
-        if (!newAthleteForm.name || !newAthleteForm.university || !newAthleteForm.course || !newAthleteForm.sport) {
-            showNotification('Preencha todos os campos do atleta!');
+        if (!newAthleteForm.name || !newAthleteForm.course || !newAthleteForm.university || !newAthleteForm.sport) {
+            showNotification('Preencha os dados do atleta!');
             return;
         }
-        const newAthlete = {
-            id: Date.now().toString(),
-            firstName: newAthleteForm.name.split(' ')[0],
-            lastName: newAthleteForm.name.split(' ').slice(1).join(' ') || '',
+
+        const nameParts = newAthleteForm.name.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ');
+
+        addAthlete({
+            id: `a-${Date.now()}`,
+            firstName,
+            lastName,
             institution: newAthleteForm.university,
-            course: newAthleteForm.course,
+            course: `${newAthleteForm.course} - ${newAthleteForm.university}`,
             sports: [newAthleteForm.sport]
-        };
-        addAthlete(newAthlete);
+        });
+        showNotification('Atleta cadastrado!');
         setIsNewAthleteOpen(false);
-        setNewAthleteForm({ name: '', university: '', course: '', sport: '' });
-        showNotification("Atleta cadastrado com sucesso!");
+        setNewAthleteForm({ name: '', university: '', course: '', sport: AVAILABLE_SPORTS[0] });
+    };
+
+    const handleSaveNewBestAthlete = () => {
+        if (!newBestAthleteForm.fullName || !newBestAthleteForm.course || !newBestAthleteForm.institution || !newBestAthleteForm.sport) {
+            showNotification('Preencha os dados do melhor atleta!');
+            return;
+        }
+
+        const nameParts = newBestAthleteForm.fullName.trim().split(' ');
+        const firstName = nameParts[0];
+        const lastName = nameParts.slice(1).join(' ');
+
+        addBestAthlete({
+            id: `ba-${Date.now()}`,
+            firstName,
+            lastName,
+            institution: newBestAthleteForm.institution,
+            course: `${newBestAthleteForm.course} - ${newBestAthleteForm.institution}`,
+            sports: [newBestAthleteForm.sport]
+        });
+        showNotification('Melhor Atleta cadastrado com sucesso!');
+        setIsNewBestAthleteOpen(false);
+        setNewBestAthleteForm({ fullName: '', institution: '', course: '', sport: AVAILABLE_SPORTS[0] });
     };
 
     const handleDeleteAthlete = (id: string, name: string) => {
-        if (window.confirm(`Tem certeza que deseja remover o atleta ${name}?`)) {
+        if (window.confirm('Tem certeza que deseja remover o atleta ' + name + '?')) {
             removeAthlete(id);
             showNotification("Atleta excluído com sucesso!");
         }
@@ -227,6 +268,7 @@ const AdminDashboard: React.FC = () => {
                         { id: 'matches', label: 'Gerenciar Partidas', icon: <Clock size={18} /> },
                         { id: 'teams', label: 'Equipes & Cursos', icon: <Users size={18} /> },
                         { id: 'athletes', label: 'Atletas', icon: <Users size={18} /> },
+                        { id: 'best-athletes', label: 'Melhores Atletas', icon: <Trophy size={18} /> },
                         { id: 'settings', label: 'Configurações', icon: <Settings size={18} /> },
                     ].map(tab => (
                         <button
@@ -640,6 +682,71 @@ const AdminDashboard: React.FC = () => {
                         </div>
                     )}
 
+                    {/* ====== ABA MELHORES ATLETAS ====== */}
+                    {activeTab === 'best-athletes' && (
+                        <div>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+                                <h2 style={{ fontSize: '20px', fontWeight: 800 }}>Melhores Atletas (Destaques)</h2>
+                                <button
+                                    onClick={() => setIsNewBestAthleteOpen(true)}
+                                    style={{
+                                        background: 'var(--accent-color)', color: '#fff', border: 'none', padding: '10px 20px', borderRadius: '8px', fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px'
+                                    }}
+                                >
+                                    <PlusCircle size={18} />
+                                    Cadastrar Melhor Atleta
+                                </button>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                                {bestAthletes.length === 0 ? (
+                                    <div style={{ padding: '30px', textAlign: 'center', color: 'var(--text-secondary)', background: 'var(--bg-hover)', borderRadius: '12px' }}>
+                                        Nenhum melhor atleta cadastrado ainda.
+                                    </div>
+                                ) : (
+                                    bestAthletes.map(athlete => (
+                                        <div key={athlete.id} className="premium-card" style={{ padding: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                                                {athlete.image ? (
+                                                    <img src={athlete.image} alt={athlete.firstName} style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} />
+                                                ) : (
+                                                    <div style={{
+                                                        width: '48px',
+                                                        height: '48px',
+                                                        borderRadius: '50%',
+                                                        background: 'rgba(255,255,255,0.05)',
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        justifyContent: 'center',
+                                                        fontSize: '18px',
+                                                        fontWeight: 800,
+                                                        color: 'var(--accent-color)'
+                                                    }}>
+                                                        {athlete.firstName[0]}{athlete.lastName[0]}
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div style={{ fontSize: '16px', fontWeight: 700 }}>{athlete.firstName} {athlete.lastName}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '4px' }}>{athlete.course} • {athlete.sports.join(', ')}</div>
+                                                </div>
+                                            </div>
+                                            <div style={{ display: 'flex', gap: '10px' }}>
+                                                <button
+                                                    onClick={() => removeBestAthlete(athlete.id)}
+                                                    style={{ background: 'transparent', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '8px' }}
+                                                    title="Excluir"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* ====== ABA CONFIGURAÇÕES ====== */}
                     {activeTab === 'settings' && (
                         <div className="premium-card" style={{ padding: '30px' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '30px', borderBottom: '1px solid var(--border-color)', paddingBottom: '20px' }}>
@@ -924,6 +1031,51 @@ const AdminDashboard: React.FC = () => {
                         <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
                             <button onClick={handleSaveNewAthlete} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Atleta</button>
                             <button onClick={() => setIsNewAthleteOpen(false)} style={modalButtonStyle}>Cancelar</button>
+                        </div>
+                    </div>
+                </ModalOverlay>
+            )}
+
+            {isNewBestAthleteOpen && (
+                <ModalOverlay onClose={() => setIsNewBestAthleteOpen(false)}>
+                    <h2 style={{ marginBottom: '16px' }}>Cadastrar Novo Melhor Atleta</h2>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Nome Completo</label>
+                            <input type="text" placeholder="Ex: João da Silva" style={inputStyle} value={newBestAthleteForm.fullName} onChange={e => setNewBestAthleteForm({ ...newBestAthleteForm, fullName: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Faculdade (Ex: Unisanta)</label>
+                            <input type="text" placeholder="Ex: Unisanta" style={inputStyle} value={newBestAthleteForm.institution} onChange={e => setNewBestAthleteForm({ ...newBestAthleteForm, institution: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Curso (Ex: Engenharia)</label>
+                            <input type="text" placeholder="Ex: Engenharia" style={inputStyle} value={newBestAthleteForm.course} onChange={e => setNewBestAthleteForm({ ...newBestAthleteForm, course: e.target.value })} />
+                        </div>
+                        <div>
+                            <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '6px' }}>Modalidade Principal</label>
+                            <select style={inputStyle} value={newBestAthleteForm.sport} onChange={e => setNewBestAthleteForm({ ...newBestAthleteForm, sport: e.target.value })}>
+                                <option value="">Selecione a Modalidade...</option>
+                                <option value="Futsal">Futsal</option>
+                                <option value="Futebol Society">Futebol Society</option>
+                                <option value="Handebol">Handebol</option>
+                                <option value="Vôlei">Vôlei</option>
+                                <option value="Natação">Natação</option>
+                                <option value="Karatê">Karatê</option>
+                                <option value="Judô">Judô</option>
+                                <option value="Tamboréu">Tamboréu</option>
+                                <option value="Xadrez">Xadrez</option>
+                                <option value="Tênis de Mesa">Tênis de Mesa</option>
+                                <option value="Futevôlei">Futevôlei</option>
+                                <option value="Beach Tennis">Beach Tennis</option>
+                                <option value="Vôlei de Praia">Vôlei de Praia</option>
+                                <option value="Basquete 3x3">Basquete 3x3</option>
+                            </select>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '10px', marginTop: '16px' }}>
+                            <button onClick={handleSaveNewBestAthlete} style={{ ...modalButtonStyle, background: 'var(--accent-color)' }}>Salvar Atleta</button>
+                            <button onClick={() => setIsNewBestAthleteOpen(false)} style={modalButtonStyle}>Cancelar</button>
                         </div>
                     </div>
                 </ModalOverlay>

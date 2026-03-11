@@ -1,18 +1,43 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { X, Trophy, Medal } from 'lucide-react';
 import { mockRanking, COURSE_ICONS, COURSE_EMBLEMS } from '../../data/mockData';
+import { useData } from '../context/DataContext';
 
 interface RankingModalProps {
     onClose: () => void;
 }
 
 const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
-    const getTeamEmblem = (teamName: string) => {
+    const { courses, customEmblems } = useData();
+
+    const getTeamEmblem = (teamName: string, fullCourseName: string) => {
+        if (customEmblems[fullCourseName]) return customEmblems[fullCourseName];
+
         const foundCourse = Object.keys(COURSE_EMBLEMS).find(courseKey =>
             courseKey.toLowerCase().includes(teamName.toLowerCase())
         );
         return foundCourse ? `/emblemas/${COURSE_EMBLEMS[foundCourse]}` : null;
     };
+
+    const sortedRanking = useMemo(() => {
+        // Build array combining points from mockRanking with all courses available
+        const rankingMap = new Map(mockRanking.map(r => [r.course, r.points]));
+        
+        const fullList = courses.map(course => {
+            return {
+                course: course,
+                points: rankingMap.get(course) || 0
+            };
+        });
+
+        // Sort dynamically: 1st Points (descending), 2nd Alphabetical (ascending)
+        return fullList.sort((a, b) => {
+            if (b.points !== a.points) {
+                return b.points - a.points;
+            }
+            return a.course.localeCompare(b.course);
+        });
+    }, [courses]);
 
     return (
         <div style={{
@@ -29,7 +54,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
             <div className="premium-card animate-in" style={{
                 width: '100%',
                 maxWidth: '700px',
-                maxHeight: '85vh',
+                height: '85vh',
                 display: 'flex',
                 flexDirection: 'column',
                 position: 'relative',
@@ -96,10 +121,11 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {mockRanking.map((item, index) => {
+                            {sortedRanking.map((item, index) => {
                                 const courseName = item.course.split(' - ')[0];
-                                const institution = item.course.split(' - ')[1];
+                                const institution = item.course.split(' - ')[1] || '';
                                 const icon = COURSE_ICONS[courseName] || '🏆';
+                                const rankOrdinal = index + 1;
 
                                 return (
                                     <tr
@@ -124,7 +150,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                                                 background: index === 0 ? '#FFD700' : index === 1 ? '#C0C0C0' : index === 2 ? '#CD7F32' : 'var(--bg-hover)',
                                                 color: index <= 2 ? '#000' : 'var(--text-secondary)'
                                             }}>
-                                                {item.rank}
+                                                {rankOrdinal}
                                             </div>
                                         </td>
                                         <td style={{ padding: '15px' }}>
@@ -137,7 +163,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                                                     justifyContent: 'center'
                                                 }}>
                                                     {(() => {
-                                                        const emblemUrl = getTeamEmblem(item.course);
+                                                        const emblemUrl = getTeamEmblem(courseName, item.course);
                                                         return emblemUrl ? (
                                                             <img
                                                                 src={emblemUrl}
@@ -153,7 +179,7 @@ const RankingModal: React.FC<RankingModalProps> = ({ onClose }) => {
                                                     })()}
                                                     <span style={{
                                                         fontSize: '20px',
-                                                        display: getTeamEmblem(courseName) ? 'none' : 'block'
+                                                        display: getTeamEmblem(courseName, item.course) ? 'none' : 'block'
                                                     }}>
                                                         {icon}
                                                     </span>

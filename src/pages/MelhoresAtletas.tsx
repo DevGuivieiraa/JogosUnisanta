@@ -2,11 +2,13 @@ import { type FC, useState } from 'react';
 import Header from '../components/Navigation/Header';
 import Sidebar from '../components/Layout/Sidebar';
 import RankingModal from '../components/Modals/RankingModal';
-import { mockAthletes } from '../data/mockData';
 import { Trophy } from 'lucide-react';
+import { useData } from '../components/context/DataContext';
 
 const MelhoresAtletas: FC = () => {
     const [showRanking, setShowRanking] = useState(false);
+    const { bestAthletes } = useData();
+
     return (
         <div style={{ minHeight: '100vh', background: 'var(--bg-primary)' }}>
             <Header />
@@ -29,57 +31,72 @@ const MelhoresAtletas: FC = () => {
                                 gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
                                 gap: '20px'
                             }}>
-                                {[...mockAthletes].sort(() => 0.5 - Math.random()).slice(0, 6).map(athlete => (
-                                    <div key={athlete.id} className="premium-card hover-glow" style={{ padding: '20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
-                                        <div style={{
-                                            position: 'absolute',
-                                            top: '-20px',
-                                            right: '-20px',
-                                            background: 'var(--accent-color)',
-                                            width: '50px',
-                                            height: '50px',
-                                            borderRadius: '50%',
-                                            opacity: 0.1
-                                        }} />
-                                        <div style={{
-                                            width: '64px',
-                                            height: '64px',
-                                            borderRadius: '50%',
-                                            background: 'var(--bg-hover)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center',
-                                            color: 'var(--accent-color)',
-                                            fontSize: '24px',
-                                            fontWeight: 800,
-                                            margin: '0 auto 15px',
-                                            border: '2px solid var(--accent-color)'
-                                        }}>
-                                            {athlete.firstName[0]}{athlete.lastName[0]}
-                                        </div>
-                                        <div style={{ fontSize: '16px', fontWeight: 800, marginBottom: '4px' }}>
-                                            {athlete.firstName} {athlete.lastName}
-                                        </div>
-                                        <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
-                                            <Trophy size={14} /> {(athlete.id.charCodeAt(athlete.id.length - 1) % 5) + 3} MVP
-                                        </div>
-                                        <div style={{ marginTop: '15px', display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
-                                            {athlete.sports.map(sport => (
-                                                <span key={sport} style={{
-                                                    background: 'var(--bg-hover)',
-                                                    color: 'white',
-                                                    padding: '4px 10px',
-                                                    borderRadius: '20px',
-                                                    fontSize: '11px',
-                                                    fontWeight: 600,
-                                                    border: '1px solid var(--border-color)'
-                                                }}>
-                                                    {sport}
-                                                </span>
-                                            ))}
-                                        </div>
+                                {bestAthletes.length === 0 ? (
+                                    <div style={{ padding: '40px', gridColumn: '1 / -1', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                                        Nenhum atleta destacado no momento. Os resultados da competição revelarão em breve nossos campeões!
                                     </div>
-                                ))}
+                                ) : (
+                                    bestAthletes.map(athlete => {
+                                        // Count "medals/mvps" using name hash as mock metric (since it's a fixed array of games won etc is not real)
+                                        const mockMVPCount = (athlete.id.charCodeAt(athlete.id.length - 1) % 5) + 3;
+                                        
+                                        return (
+                                        <div key={athlete.id} className="premium-card hover-glow" style={{ padding: '20px', textAlign: 'center', position: 'relative', overflow: 'hidden' }}>
+                                            <div style={{
+                                                position: 'absolute',
+                                                top: '-20px',
+                                                right: '-20px',
+                                                background: 'var(--accent-color)',
+                                                width: '50px',
+                                                height: '50px',
+                                                borderRadius: '50%',
+                                                opacity: 0.1
+                                            }} />
+                                            
+                                            <div style={{
+                                                width: '64px',
+                                                height: '64px',
+                                                borderRadius: '50%',
+                                                background: 'var(--bg-hover)',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                color: 'var(--accent-color)',
+                                                fontSize: '24px',
+                                                fontWeight: 800,
+                                                margin: '0 auto 15px',
+                                                border: '2px solid var(--accent-color)'
+                                            }}>
+                                                {athlete.firstName[0]}{athlete.lastName[0] || ''}
+                                            </div>
+
+                                            <div style={{ fontSize: '16px', fontWeight: 800, marginBottom: '4px' }}>
+                                                {athlete.firstName} {athlete.lastName}
+                                            </div>
+                                            <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                                                {athlete.course}
+                                            </div>
+                                            <div style={{ fontSize: '14px', color: 'var(--accent-color)', fontWeight: 800, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '4px' }}>
+                                                <Trophy size={14} /> {mockMVPCount} MVP
+                                            </div>
+                                            <div style={{ marginTop: '15px', display: 'flex', flexWrap: 'wrap', gap: '8px', justifyContent: 'center' }}>
+                                                {athlete.sports.map(sport => (
+                                                    <span key={sport} style={{
+                                                        background: 'var(--bg-hover)',
+                                                        color: 'white',
+                                                        padding: '4px 10px',
+                                                        borderRadius: '20px',
+                                                        fontSize: '11px',
+                                                        fontWeight: 600,
+                                                        border: '1px solid var(--border-color)'
+                                                    }}>
+                                                        {sport}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )})
+                                )}
                             </div>
                         </div>
                     </div>
